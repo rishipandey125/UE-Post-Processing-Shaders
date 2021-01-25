@@ -45,7 +45,7 @@ float min_var = 1e+4;
 float3 color;
 for (int i = 0; i < 4; i++) {
   mean[i] /= n;
-  vec3 variance = abs((var[i]/n) - (mean[i]*mean[i]));
+  float3 variance = abs((var[i]/n) - (mean[i]*mean[i]));
   float v = variance.r + variance.g + variance.b;
   if (v < min_var) {
     min_var = v;
