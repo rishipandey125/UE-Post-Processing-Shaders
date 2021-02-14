@@ -1,3 +1,4 @@
+#pragma once
 const int radius = 8;
 float n = float(radius*radius);
 float3 zero = float3(0,0,0);
@@ -5,56 +6,57 @@ float3 mean[4] = {zero,zero,zero,zero};
 float3 var[4] = {zero,zero,zero,zero};
 int l = radius-1;
 float2 uv = GetDefaultSceneTextureUV(Parameters,14);
+return SceneTextureLookup(uv,8,false).rgb;
 //Top Left Sub-Grid
-int y = 0;
-int x = 0;
-for (y = (-1*l); y <= 0; y++) {
-  for (x = (-1*l); x <= 0; x++) {
-    float3 pix = SceneTextureLookup(uv + float2(x,y),14,false).rgb;
-    mean[0] += pix;
-    var[0] += pix*pix;
-  }
-}
-
-//Top Right Sub-Grid
-for (y = (-1*l); y <= 0; y++) {
-  for (x = l; x >= 0; x--) {
-    float3 pix = SceneTextureLookup(uv + float2(x,y),14,false).rgb;
-    mean[1] += pix;
-    var[1] += pix*pix;
-  }
-}
-
-//Bottom Left Sub-Grid
-for (y = l; y >= 0; y--) {
-  for (x = (-1*l); x <= 0; x++) {
-    float3 pix = SceneTextureLookup(uv + float2(x,y),14,false).rgb;
-    mean[2] += pix;
-    var[2] += pix*pix;
-  }
-}
-
-//Bottom Right Sub-Grid
-for (y = l; y >= 0; y--) {
-  for (x = l; x >= 0; x--) {
-    float3 pix = SceneTextureLookup(uv + float2(x,y),14,false).rgb;
-    mean[3] += pix;
-    var[3] += pix*pix;
-  }
-}
-
-//Selecting Correct Pixel Based on Lowest Variance
-float min_var = 1e+4;
-float3 color;
-for (int i = 0; i < 4; i++) {
-  mean[i] /= n;
-  float3 variance = abs((var[i]/n) - (mean[i]*mean[i]));
-  float v = variance.r + variance.g + variance.b;
-  if (v < min_var) {
-    min_var = v;
-    color = mean[i];
-  }
-}
-
-// Output Correct Color
-return mean[1];
+// int y = 0;
+// int x = 0;
+// for (y = (-1*l); y <= 0; y++) {
+//   for (x = (-1*l); x <= 0; x++) {
+//     float3 pix = SceneTextureLookup(uv + float2(x,y),14,false).rgb;
+//     mean[0] += pix;
+//     var[0] += pix*pix;
+//   }
+// }
+//
+// //Top Right Sub-Grid
+// for (y = (-1*l); y <= 0; y++) {
+//   for (x = l; x >= 0; x--) {
+//     float3 pix = SceneTextureLookup(uv + float2(x,y),14,false).rgb;
+//     mean[1] += pix;
+//     var[1] += pix*pix;
+//   }
+// }
+//
+// //Bottom Left Sub-Grid
+// for (y = l; y >= 0; y--) {
+//   for (x = (-1*l); x <= 0; x++) {
+//     float3 pix = SceneTextureLookup(uv + float2(x,y),14,false).rgb;
+//     mean[2] += pix;
+//     var[2] += pix*pix;
+//   }
+// }
+//
+// //Bottom Right Sub-Grid
+// for (y = l; y >= 0; y--) {
+//   for (x = l; x >= 0; x--) {
+//     float3 pix = SceneTextureLookup(uv + float2(x,y),14,false).rgb;
+//     mean[3] += pix;
+//     var[3] += pix*pix;
+//   }
+// }
+//
+// //Selecting Correct Pixel Based on Lowest Variance
+// float min_var = 1e+4;
+// float3 color;
+// for (int i = 0; i < 4; i++) {
+//   mean[i] /= n;
+//   float3 variance = abs((var[i]/n) - (mean[i]*mean[i]));
+//   float v = variance.r + variance.g + variance.b;
+//   if (v < min_var) {
+//     min_var = v;
+//     color = mean[i];
+//   }
+// }
+//
+// // Output Correct Color
+// return mean[1];
