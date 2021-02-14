@@ -5,7 +5,6 @@ float3 mean[4] = {zero,zero,zero,zero};
 float3 var[4] = {zero,zero,zero,zero};
 int l = radius-1;
 float2 uv = GetDefaultSceneTextureUV(Parameters,14);
-
 //Top Left Sub-Grid
 int y = 0;
 int x = 0;
@@ -58,4 +57,4 @@ for (int i = 0; i < 4; i++) {
 }
 
 // Output Correct Color
-return color;
+return mean[1];
