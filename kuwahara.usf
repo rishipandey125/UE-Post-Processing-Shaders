@@ -6,6 +6,7 @@ float3 mean[4] = {zero, zero, zero, zero};
 float3 var[4] = {zero, zero, zero, zero};
 int l = radius - 1;
 float2 uv = GetDefaultSceneTextureUV(Parameters, 14);
+//Screen Size
 float2 TexelSize = View.ViewSizeAndInvSize.zw;
 // Bottom Left Sub-Grid
 int y = 0;
