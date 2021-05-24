@@ -1,5 +1,5 @@
 #pragma once
-const int radius = 15;
+const int radius = 6;
 float n = float(radius * radius);
 float3 zero = float3(0, 0, 0);
 float3 mean[4] = {zero, zero, zero, zero};
