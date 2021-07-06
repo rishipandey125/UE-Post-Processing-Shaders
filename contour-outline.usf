@@ -1,0 +1,11 @@
+#pragma once
+float2 uv = GetDefaultSceneTextureUV(Parameters, 14);
+
+
+
+//contour will use a depth map, and normal map of the mesh
+//we need a way to isolate it to that specific mesh
+
+
+//SceneTextureLookup(uv,8,false).rgb -> world normals
+//SceneTextureLookup(uv,1,false).rgb -> scene depth
