@@ -1,11 +1,14 @@
 #pragma once
 //Helper Function for Expand Operation
-float3 expand(float3 vec) {
-  float expandVal(float x) {
-    return (2*x - 1);
+struct HelperFunctions {
+  float3 expand(float3 vec) {
+    float x = (2 * vec.r) - 1;
+    float y = (2 * vec.g) - 1;
+    float z = (2 * vec.b) - 1;
+    return float3(x,y,z);
   }
-  return float3(expandVal(vec.r),expandVal(vec.g),expandVal(vec.b));
-}
+};
+HelperFunctions f;
 //UV Texture GET
 float2 uv = GetDefaultSceneTextureUV(Parameters, 14);
 
@@ -27,10 +30,8 @@ if (SceneTextureLookup(uv,25,false).r == stencilIndex) {
   float3 Cnorm = SceneTextureLookup(C,8,false).rgb;
   float3 Fnorm = SceneTextureLookup(F,8,false).rgb;
   float3 Hnorm = SceneTextureLookup(H,8,false).rgb;
+  float3 In = (dot(f.expand(Anorm),f.expand(Hnorm)) * 0.5) + (dot(f.expand(Cnorm),f.expand(Fnorm)));
 
-  In = (dot(expand(Anorm),expand(Hnorm)) * 0.5) + (dot(expand(Cnorm),expand(Fnorm)));
-
-
-  return float3(In.r,In.g,In.b);
+  return In;
 }
 return SceneTextureLookup(uv,0,false).rgb;
