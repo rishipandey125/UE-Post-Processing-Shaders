@@ -39,7 +39,7 @@ if (SceneTextureLookup(uv,25,false).r == stencilIndex) {
   float Iz = pow((1 - (0.5 * abs(Az-Hz))),2.0) * pow((1 - (0.5 * abs(Cz-Fz))),2.0);
   color = float3(In.r,In.g,In.b);
   if (color.rgb == float3(0,0,0)) {
-     color = 
+     color = float3(1,0,0);
   }
 }
 return color;
