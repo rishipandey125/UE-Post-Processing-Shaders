@@ -13,7 +13,7 @@ HelperFunctions f;
 float2 uv = GetDefaultSceneTextureUV(Parameters, 14);
 //Stencil Index for Character
 float stencilIndex = 1;
-float3 color = float4(1,1,1);
+float3 color = float3(1,1,1);
 if (SceneTextureLookup(uv,25,false).r == stencilIndex) {
   //Screen Size
   float2 TexelSize = View.ViewSizeAndInvSize.zw;
