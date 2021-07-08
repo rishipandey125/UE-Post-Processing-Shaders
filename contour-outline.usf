@@ -11,10 +11,9 @@ struct HelperFunctions {
 HelperFunctions f;
 //UV Texture GET
 float2 uv = GetDefaultSceneTextureUV(Parameters, 14);
-
+//Stencil Index for Character
+float stencilIndex = 1;
 if (SceneTextureLookup(uv,25,false).r == stencilIndex) {
-  //Stencil Index for Character
-  float stencilIndex = 1;
   //Screen Size
   float2 TexelSize = View.ViewSizeAndInvSize.zw;
   //top left UV coordinate A
