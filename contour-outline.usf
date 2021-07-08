@@ -13,6 +13,7 @@ HelperFunctions f;
 float2 uv = GetDefaultSceneTextureUV(Parameters, 14);
 //Stencil Index for Character
 float stencilIndex = 1;
+float4 color = float4(1,1,1,1);
 if (SceneTextureLookup(uv,25,false).r == stencilIndex) {
   //Screen Size
   float2 TexelSize = View.ViewSizeAndInvSize.zw;
@@ -36,9 +37,6 @@ if (SceneTextureLookup(uv,25,false).r == stencilIndex) {
   float Fz = SceneTextureLookup(F,1,false).r;
   float Hz = SceneTextureLookup(H,1,false).r;
   float Iz = pow((1 - (0.5 * abs(Az-Hz))),2.0) * pow((1 - (0.5 * abs(Cz-Fz))),2.0);
-  float4 color = float4(In.r,In.g,In.b,Iz);
-  if (color.r == 1.0 && color.g == 1.0 && color.b == 1.0 && color.a == 1.0) {
-    color = SceneTextureLookup(uv,0,false).rgba;
-  }
+  color = float4(In.r,In.g,In.b,Iz);
 }
-return SceneTextureLookup(uv,0,false).rgba;
+return color;
