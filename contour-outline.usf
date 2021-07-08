@@ -36,7 +36,9 @@ if (SceneTextureLookup(uv,25,false).r == stencilIndex) {
   float Fz = SceneTextureLookup(F,1,false).r;
   float Hz = SceneTextureLookup(H,1,false).r;
   float Iz = pow((1 - (0.5 * abs(Az-Hz))),2.0) * pow((1 - (0.5 * abs(Cz-Fz))),2.0);
-  return float4(In.r,In.g,In.b,Iz);
+  float4 color = float4(In.r,In.g,In.b,Iz);
+  if (color != float4(1,1,1,1)) {
+    color = SceneTextureLookup(uv,0,false).rgba;
+  }
 }
-return float4(1,1,1,1);
-// return SceneTextureLookup(uv,0,false).rgba;
+return SceneTextureLookup(uv,0,false).rgba;
