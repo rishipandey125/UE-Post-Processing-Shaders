@@ -12,7 +12,7 @@ SobelHelpers s_h;
 float2 uv = GetDefaultSceneTextureUV(Parameters, 14);
 //Stencil Index for Character
 float stencilIndex = 1;
-float color = 0;
+float3 color = SceneTextureLookup(uv,0,false).rgb;
 //if i am in the stencil
 if (SceneTextureLookup(uv,25,false).r == stencilIndex) {
   //Screen Size
@@ -41,7 +41,12 @@ if (SceneTextureLookup(uv,25,false).r == stencilIndex) {
   float dIy = max(dIyR,dIyG);
   dIy = max(dIy,dIyB);
   //dI
-  color = (1/sqrt(2)) * sqrt(pow(dIx,2.0)+pow(dIy,2.0));
+  float dI = (1/sqrt(2)) * sqrt(pow(dIx,2.0)+pow(dIy,2.0));
+  if (dI != 0) {
+    color = float3(1,1,1);
+  } else {
+    color = float3(0,0,0);
+  }
 }
 //return single float value (grayscale img)
 return color;
