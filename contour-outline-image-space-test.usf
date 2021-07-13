@@ -12,7 +12,7 @@ SobelHelpers s_h;
 float2 uv = GetDefaultSceneTextureUV(Parameters, 14);
 //Stencil Index for Character
 float stencilIndex = 1;
-float3 color = SceneTextureLookup(uv,0,false).rgb;
+float3 color = SceneTextureLookup(uv,14,false).rgb;
 //if i am in the stencil
 if (SceneTextureLookup(uv,25,false).r == stencilIndex) {
   //Screen Size
