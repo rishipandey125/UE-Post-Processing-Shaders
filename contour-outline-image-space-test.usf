@@ -21,14 +21,14 @@ if (SceneTextureLookup(uv,25,false).r == stencilIndex) {
   // A B C
   // D X E
   // F G H
-  float2 A = (float2(-1,1)*TexelSize) + uv;
-  float2 B = (float2(0,1)*TexelSize) + uv;
-  float2 C = (float2(1,1)*TexelSize) + uv;
-  float2 D = (float2(-1,0)*TexelSize) + uv;
-  float2 E = (float2(1,0)*TexelSize) + uv;
-  float2 F = (float2(-1,-1)*TexelSize) + uv;
-  float2 G = (float2(0,-1)*TexelSize) + uv;
-  float2 H = (float2(1,-1)*TexelSize) + uv;
+  float3 A = SceneTextureLookup((float2(-1,1)*TexelSize) + uv,0,false).rgb
+  float3 B = SceneTextureLookup((float2(0,1)*TexelSize) + uv,0,false).rgb
+  float3 C = SceneTextureLookup((float2(1,1)*TexelSize) + uv,0,false).rgb
+  float3 D = SceneTextureLookup((float2(-1,0)*TexelSize) + uv,0,false).rgb
+  float3 E = SceneTextureLookup((float2(1,0)*TexelSize) + uv,0,false).rgb
+  float3 F = SceneTextureLookup((float2(-1,-1)*TexelSize) + uv,0,false).rgb
+  float3 G = SceneTextureLookup((float2(0,-1)*TexelSize) + uv,0,false).rgb
+  float3 H = SceneTextureLookup((float2(1,-1)*TexelSize) + uv,0,false).rgb
   //sobel x differential
   float dIxR = abs(s_h.sobel_operation(float3(A.r,D.r,F.r),float3(C.r,E.r,H.r)));
   float dIyR = abs(s_h.sobel_operation(float3(A.r,B.r,C.r),float3(F.r,G.r,H.r)));
