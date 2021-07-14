@@ -41,7 +41,8 @@ if (SceneTextureLookup(uv,25,false).r == stencilIndex) {
   float dIy = max(dIyR,dIyG);
   dIy = max(dIy,dIyB);
   //dI
-  float dI = (1/sqrt(2)) * sqrt(pow(dIx,2.0)+pow(dIy,2.0));
+  float dI = sqrt(pow(dIx,2.0)+pow(dIy,2.0));
+  // float dI = (1/sqrt(2)) * sqrt(pow(dIx,2.0)+pow(dIy,2.0));
   if (dI > 0.2) {
     color = float3(1,1,1);
   } else {
