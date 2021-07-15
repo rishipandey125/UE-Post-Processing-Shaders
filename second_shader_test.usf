@@ -1,0 +1,14 @@
+#pragma once
+//UV Texture GET
+float2 uv = GetDefaultSceneTextureUV(Parameters, 14);
+//Stencil Index for Character
+float stencilIndex = 1;
+float3 color = SceneTextureLookup(uv,14,false).rgb;
+//if i am in the stencil
+if (SceneTextureLookup(uv,25,false).r == stencilIndex) {
+  if (color == float3(1,1,1)) {
+    color = float3(1,0,0);
+  }
+}
+//return single float value (grayscale img)
+return color;
