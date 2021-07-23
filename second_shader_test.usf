@@ -3,7 +3,7 @@
 float2 uv = GetDefaultSceneTextureUV(Parameters, 14);
 //Stencil Index for Character
 float stencilIndex = 1;
-float3 color = SceneTextureLookup(uv,15,false).rgb;
+float3 color = SceneTextureLookup(uv,14,false).rgb;
 //if i am in the stencil
 if (SceneTextureLookup(uv,25,false).r == stencilIndex) {
   if (color.r == 1 && color.g == 1 && color.b == 1) {
