@@ -63,6 +63,19 @@ for (int i = 0; i < 4; i++) {
     color = mean[i];
   }
 }
+//generating random canvas texture
+struct RandomNumber {
+  float random(float2 input) {
+    float2 K1 = float2(
+      23.14069263277926, // e^pi (Gelfond's constant)
+      2.665144142690225 // 2^sqrt(2) (Gelfond–Schneider constant)
+    );
+    return frac(cos(dot(input,K1)) * 12345.6789);
+  }
+};
+RandomNumber r;
+float random_x = r.random(uv.x,time);
+float random_y = r.random(uv.y,time);
 
 // Output Correct Color
-return color*Texture2DSample(Tex, TexSampler, uv);;
+return color*Texture2DSample(Tex, TexSampler, float2(random_x,random_y));
