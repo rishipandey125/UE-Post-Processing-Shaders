@@ -78,4 +78,4 @@ float random_x = r.random(float2(uv.x,time));
 float random_y = r.random(float2(uv.y,time));
 
 // Output Correct Color
-return color*Texture2DSample(Tex, TexSampler, float2(random_x,random_y));
+return color*Texture2DSample(Tex, TexSampler, uv);
