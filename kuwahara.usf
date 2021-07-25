@@ -74,7 +74,8 @@ struct RandomNumber {
   }
 };
 RandomNumber r;
-float random_num = r.random(float2(time,time));
-float3 canvas_texture_color = Texture2DSample(Tex, TexSampler, uv)*lerp(0.99,1.01,random_num);
+camera_pos.x*camera_pos.y
+float random_num = r.random(float2(camera_pos.x*camera_pos.y ,camera_pos.x*camera_pos.z));
+float3 canvas_texture_color = Texture2DSample(Tex, TexSampler, uv)*lerp(0.9,1.1,random_num);
 // Output Correct Color
 return color*canvas_texture_color;
