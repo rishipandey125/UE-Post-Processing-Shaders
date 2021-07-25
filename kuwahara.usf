@@ -75,7 +75,7 @@ struct RandomNumber {
 };
 RandomNumber r;
 float random_x = r.random(float2(camera_pos.x*camera_pos.y ,camera_pos.x*camera_pos.z));
-float random_y = r.random(float2(camera.y*camera.z,camera.y*camera.x));
+float random_y = r.random(float2(camera_pos.y*camera_pos.z,camera_pos.y*camera_pos.x));
 float3 canvas_texture_color = Texture2DSample(Tex, TexSampler, float2(random_x,random_y));
 // Output Correct Color
 return color*canvas_texture_color;
