@@ -75,6 +75,6 @@ struct RandomNumber {
 };
 RandomNumber r;
 float random_num = r.random(uv);
-float3 canvas_texture_color = Texture2DSample(Tex, TexSampler, uv) * (0.5+random_num);
+float3 canvas_texture_color = Texture2DSample(Tex, TexSampler, uv)*1.2;
 // Output Correct Color
 return color*canvas_texture_color;
