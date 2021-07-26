@@ -74,8 +74,14 @@ struct RandomNumber {
   }
 };
 RandomNumber r;
+/*
+the reason this doesnt work is because every frame will compute the same uv cord since the seed
+which is the camera_pos is the same for every pixel in the image
+each image will have the same canvas
+the seed must determine how the image is scattered and retrieved not the literal uv
+*/
 float random_x = r.random(float2(camera_pos.x,camera_pos.y));
 float random_y = r.random(float2(camera_pos.x,camera_pos.z));
-float3 canvas_texture_color = Texture2DSample(Tex, TexSampler, float2(random_x,random_y));
+float3 canvas_texture_color = Texture2DSample(Tex, TexSampler, float2(random_x*uv.x,random_y*uv.y));
 // Output Correct Color
 return color*canvas_texture_color;
