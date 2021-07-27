@@ -80,8 +80,10 @@ which is the camera_pos is the same for every pixel in the image
 each image will have the same canvas
 the seed must determine how the image is scattered and retrieved not the literal uv
 */
-// float random_x = r.random(float2(uv.x,time));
-// float random_y = r.random(float2(uv.y,time));
+if (time % 3 == 0) {
+  uv.x = r.random(float2(uv.x,time));
+  uv.y = r.random(float2(uv.y,time));
+}
 float3 canvas_texture_color = Texture2DSample(Tex, TexSampler, uv);
 // Output Correct Color
 return color*canvas_texture_color;
