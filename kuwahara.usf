@@ -86,6 +86,6 @@ if (time % 3 == 0) {
   canvas_x = r.random(float2(uv.x,time));
   canvas_y = r.random(float2(uv.y,time));
 }
-float3 canvas_texture_color = Texture2DSample(Tex, TexSampler, vec2(canvas_x,canvas_y));
+float3 canvas_texture_color = Texture2DSample(Tex, TexSampler, float2(canvas_x,canvas_y));
 // Output Correct Color
 return color*canvas_texture_color;
