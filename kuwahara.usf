@@ -1,11 +1,25 @@
 #pragma once
+//normalize the z value
+//calculate the correct radius
+//potential sol: https://answers.unrealengine.com/questions/723922/scene-depth-capture-does-not-work.html
+struct NormalizeDepthValue {
+  //normalized from 0-0.5
+  float normalize_depth(float2 uv) {
+    float depth_max = pow(2,24)-1;
+    float depth_value = SceneTextureLookup(uv,1,false).r;
+    float normalized_value = (1-(depth_max/(depth_value+depth_max)));
+    return 2*normalized_value;
+  }
+};
+NormalizeDepthValue ndv;
+float2 uv = GetDefaultSceneTextureUV(Parameters, 14);
+float normalized_depth = ndv.normalize_depth(uv);
 const int radius = 6;
 float n = float(radius * radius);
 float3 zero = float3(0, 0, 0);
 float3 mean[4] = {zero, zero, zero, zero};
 float3 var[4] = {zero, zero, zero, zero};
 int l = radius - 1;
-float2 uv = GetDefaultSceneTextureUV(Parameters, 14);
 //Screen Size
 float2 TexelSize = View.ViewSizeAndInvSize.zw;
 // Bottom Left Sub-Grid
