@@ -91,5 +91,4 @@ if (time % 3 == 0) {
 }
 float3 canvas_texture_color = Texture2DSample(Tex, TexSampler, float2(canvas_x,canvas_y));
 // Output Correct Color
-return SceneTextureLookup(uv,1,false).r*0.0001;
-// return color*canvas_texture_color;
+return color*canvas_texture_color;
