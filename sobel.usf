@@ -1,4 +1,10 @@
 struct SobelHelpers {
+  float sobel_operation(float3 vec1, float3 vec2) {
+    float3 filter1 = float3(-1.0,-2.0,-1.0);
+    float3 filter2 = float3(1.0,2.0,1.0);
+    return dot(filter1,vec1) + dot(filter2,vec2);
+  }
+  
   float2 sobel_gradient(float2 uv, float2 TexelSize) {
     // UV coordinates based on Layout
     // A B C
@@ -13,11 +19,6 @@ struct SobelHelpers {
     float3 G = SceneTextureLookup((float2(0,-1)*TexelSize) + uv,0,false).rgb;
     float3 H = SceneTextureLookup((float2(1,-1)*TexelSize) + uv,0,false).rgb;
 
-    float sobel_operation(float3 vec1, float3 vec2) {
-      float3 filter1 = float3(-1.0,-2.0,-1.0);
-      float3 filter2 = float3(1.0,2.0,1.0);
-      return dot(filter1,vec1) + dot(filter2,vec2);
-    }
     //sobel x & y differential per channel
     float dIxR = abs(sobel_operation(float3(A.r,D.r,F.r),float3(C.r,E.r,H.r)));
     float dIyR = abs(sobel_operation(float3(A.r,B.r,C.r),float3(F.r,G.r,H.r)));
