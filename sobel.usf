@@ -1,5 +1,5 @@
 return 1;
-
+}
 float sobel_operation(float3 vec1, float3 vec2) {
     float3 filter1 = float3(-1.0,-2.0,-1.0);
     float3 filter2 = float3(1.0,2.0,1.0);
