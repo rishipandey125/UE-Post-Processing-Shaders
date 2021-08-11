@@ -12,8 +12,7 @@ float2 TexelSize = View.ViewSizeAndInvSize.zw;
 int y = 0;
 int x = 0;
 float3 pix;
-SobelHelpers s_h;
-float2 sobel_grad = s_h.sobel_gradient(uv,TexelSize);
+float2 sobel_grad = sobel_gradient(uv,TexelSize);
 float theta = atan(sobel_grad.y/sobel_grad.x);
 //rotational matrix
 float2x2 rotation_matrix = float2x2(cos(theta),-sin(theta), sin(theta), cos(theta));
