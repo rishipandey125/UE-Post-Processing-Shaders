@@ -1,5 +1,4 @@
 #pragma once
-#include "sobel.usf"
 float2 uv = GetDefaultSceneTextureUV(Parameters, 14);
 float n = float(x_radius * y_radius);
 float3 zero = float3(0, 0, 0);
@@ -13,7 +12,8 @@ float2 TexelSize = View.ViewSizeAndInvSize.zw;
 int y = 0;
 int x = 0;
 float3 pix;
-float2 sobel_grad = sobel_gradient(uv,TexelSize);
+SobelHelpers s_h;
+float2 sobel_grad = s_h.sobel_gradient(uv,TexelSize);
 float theta = atan(sobel_grad.y/sobel_grad.x);
 //rotational matrix
 float2x2 rotation_matrix = float2x2(cos(theta),-sin(theta), sin(theta), cos(theta));
