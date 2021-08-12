@@ -1,4 +1,44 @@
 #pragma once
+
+struct SobelHelpers {
+  float sobel_operation(float3 vec1, float3 vec2) {
+      float3 filter1 = float3(-1.0,-2.0,-1.0);
+      float3 filter2 = float3(1.0,2.0,1.0);
+      return dot(filter1,vec1) + dot(filter2,vec2);
+  }
+
+  float2 sobel_gradient(float2 uv, float2 TexelSize) {
+    // UV coordinates based on Layout
+    // A B C
+    // D X E
+    // F G H
+    float3 A = SceneTextureLookup((float2(-1,1)*TexelSize) + uv,0,false).rgb;
+    float3 B = SceneTextureLookup((float2(0,1)*TexelSize) + uv,0,false).rgb;
+    float3 C = SceneTextureLookup((float2(1,1)*TexelSize) + uv,0,false).rgb;
+    float3 D = SceneTextureLookup((float2(-1,0)*TexelSize) + uv,0,false).rgb;
+    float3 E = SceneTextureLookup((float2(1,0)*TexelSize) + uv,0,false).rgb;
+    float3 F = SceneTextureLookup((float2(-1,-1)*TexelSize) + uv,0,false).rgb;
+    float3 G = SceneTextureLookup((float2(0,-1)*TexelSize) + uv,0,false).rgb;
+    float3 H = SceneTextureLookup((float2(1,-1)*TexelSize) + uv,0,false).rgb;
+
+    //sobel x & y differential per channel
+    float dIxR = abs(sobel_operation(float3(A.r,D.r,F.r),float3(C.r,E.r,H.r)));
+    float dIyR = abs(sobel_operation(float3(A.r,B.r,C.r),float3(F.r,G.r,H.r)));
+    float dIxG = abs(sobel_operation(float3(A.g,D.g,F.g),float3(C.g,E.g,H.g)));
+    float dIyG = abs(sobel_operation(float3(A.g,B.g,C.g),float3(F.g,G.g,H.g)));
+    float dIxB = abs(sobel_operation(float3(A.b,D.b,F.b),float3(C.b,E.b,H.b)));
+    float dIyB = abs(sobel_operation(float3(A.b,B.b,C.b),float3(F.b,G.b,H.b)));
+    //identifying grad_x & grad_y
+    float dIx = max(dIxR,dIxG);
+    dIx = max(dIx,dIxB);
+    float dIy = max(dIyR,dIyG);
+    dIy = max(dIy,dIyB);
+    return float2(dIx,dIy);
+  }
+}; SobelHelpers s_h;
+
+
+
 float2 uv = GetDefaultSceneTextureUV(Parameters, 14);
 float n = float(x_radius * y_radius);
 float3 zero = float3(0, 0, 0);
@@ -12,7 +52,7 @@ float2 TexelSize = View.ViewSizeAndInvSize.zw;
 int y = 0;
 int x = 0;
 float3 pix;
-float2 sobel_grad = sobel_gradient(uv,TexelSize);
+float2 sobel_grad = s_h.sobel_gradient(uv,TexelSize);
 float theta = atan(sobel_grad.y/sobel_grad.x);
 //rotational matrix
 float2x2 rotation_matrix = float2x2(cos(theta),-sin(theta), sin(theta), cos(theta));
