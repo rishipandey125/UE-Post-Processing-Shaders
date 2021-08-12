@@ -59,8 +59,7 @@ float2x2 rotation_matrix = float2x2(cos(theta),-sin(theta), sin(theta), cos(thet
 for (y = (-1*l_y); y <= 0; y++) {
   for (x = (-1*l_x); x <= 0; x++) {
     //rotate the offset around the edge theta
-    float2 offset = float2(x,y)*TexelSize;
-    // float2 offset = mul(float2(x,y)*TexelSize,rotation_matrix);
+    float2 offset = mul(float2(x,y)*TexelSize,rotation_matrix);
     pix = SceneTextureLookup(uv + offset,14,false).rgb;
     mean[0] += pix;
     var[0] += pix*pix;
@@ -70,8 +69,7 @@ for (y = (-1*l_y); y <= 0; y++) {
 //Bottom Right Sub-Grid
 for (y = (-1*l_y); y <= 0; y++) {
   for (x = l_x; x >= 0; x--) {
-    float2 offset = float2(x,y)*TexelSize;
-    // float2 offset = mul(float2(x,y)*TexelSize,rotation_matrix);
+    float2 offset = mul(float2(x,y)*TexelSize,rotation_matrix);
     pix = SceneTextureLookup(uv + offset,14,false).rgb;
     mean[1] += pix;
     var[1] += pix*pix;
@@ -81,8 +79,7 @@ for (y = (-1*l_y); y <= 0; y++) {
 //Top Left Sub-Grid
 for (y = l_y; y >= 0; y--) {
   for (x = (-1*l_x); x <= 0; x++) {
-    float2 offset = float2(x,y)*TexelSize;
-    // float2 offset = mul(float2(x,y)*TexelSize,rotation_matrix);
+    float2 offset = mul(float2(x,y)*TexelSize,rotation_matrix);
     pix = SceneTextureLookup(uv + offset,14,false).rgb;
     mean[2] += pix;
     var[2] += pix*pix;
@@ -92,8 +89,7 @@ for (y = l_y; y >= 0; y--) {
 //Top Right Sub-Grid
 for (y = l_y; y >= 0; y--) {
   for (x = l_x; x >= 0; x--) {
-    float2 offset = float2(x,y)*TexelSize;
-    // float2 offset = mul(float2(x,y)*TexelSize,rotation_matrix);
+    float2 offset = mul(float2(x,y)*TexelSize,rotation_matrix);
     pix = SceneTextureLookup(uv + offset,14,false).rgb;
     mean[3] += pix;
     var[3] += pix*pix;
