@@ -1,20 +1,65 @@
 #pragma once
-const int radius = 15;
-float n = float(radius * radius);
+
+struct SobelHelpers {
+  float sobel_operation(float3 vec1, float3 vec2) {
+      float3 filter1 = float3(-1.0,-2.0,-1.0);
+      float3 filter2 = float3(1.0,2.0,1.0);
+      return dot(filter1,vec1) + dot(filter2,vec2);
+  }
+
+  float2 sobel_gradient(float2 uv, float2 TexelSize) {
+    // UV coordinates based on Layout
+    // A B C
+    // D X E
+    // F G H
+    float3 A = SceneTextureLookup((float2(-1,1)*TexelSize) + uv,0,false).rgb;
+    float3 B = SceneTextureLookup((float2(0,1)*TexelSize) + uv,0,false).rgb;
+    float3 C = SceneTextureLookup((float2(1,1)*TexelSize) + uv,0,false).rgb;
+    float3 D = SceneTextureLookup((float2(-1,0)*TexelSize) + uv,0,false).rgb;
+    float3 E = SceneTextureLookup((float2(1,0)*TexelSize) + uv,0,false).rgb;
+    float3 F = SceneTextureLookup((float2(-1,-1)*TexelSize) + uv,0,false).rgb;
+    float3 G = SceneTextureLookup((float2(0,-1)*TexelSize) + uv,0,false).rgb;
+    float3 H = SceneTextureLookup((float2(1,-1)*TexelSize) + uv,0,false).rgb;
+
+    //sobel x & y differential per channel
+    float dIxR = abs(sobel_operation(float3(A.r,D.r,F.r),float3(C.r,E.r,H.r)));
+    float dIyR = abs(sobel_operation(float3(A.r,B.r,C.r),float3(F.r,G.r,H.r)));
+    float dIxG = abs(sobel_operation(float3(A.g,D.g,F.g),float3(C.g,E.g,H.g)));
+    float dIyG = abs(sobel_operation(float3(A.g,B.g,C.g),float3(F.g,G.g,H.g)));
+    float dIxB = abs(sobel_operation(float3(A.b,D.b,F.b),float3(C.b,E.b,H.b)));
+    float dIyB = abs(sobel_operation(float3(A.b,B.b,C.b),float3(F.b,G.b,H.b)));
+    //identifying grad_x & grad_y
+    float dIx = max(dIxR,dIxG);
+    dIx = max(dIx,dIxB);
+    float dIy = max(dIyR,dIyG);
+    dIy = max(dIy,dIyB);
+    return float2(dIx,dIy);
+  }
+}; SobelHelpers s_h;
+
+
+
+float2 uv = GetDefaultSceneTextureUV(Parameters, 14);
+float n = float(x_radius * y_radius);
 float3 zero = float3(0, 0, 0);
 float3 mean[4] = {zero, zero, zero, zero};
 float3 var[4] = {zero, zero, zero, zero};
-int l = radius - 1;
-float2 uv = GetDefaultSceneTextureUV(Parameters, 14);
+int l_x = x_radius - 1;
+int l_y = y_radius - 1;
 //Screen Size
 float2 TexelSize = View.ViewSizeAndInvSize.zw;
 // Bottom Left Sub-Grid
 int y = 0;
 int x = 0;
 float3 pix;
-for (y = (-1*l); y <= 0; y++) {
-  for (x = (-1*l); x <= 0; x++) {
-    float2 offset = float2(x,y)*TexelSize;
+float2 sobel_grad = s_h.sobel_gradient(uv,TexelSize);
+float theta = atan(sobel_grad.y/sobel_grad.x);
+//rotational matrix
+float2x2 rotation_matrix = float2x2(cos(theta),-sin(theta), sin(theta), cos(theta));
+for (y = (-1*l_y); y <= 0; y++) {
+  for (x = (-1*l_x); x <= 0; x++) {
+    //rotate the offset around the edge theta
+    float2 offset = mul(float2(x,y)*TexelSize,rotation_matrix);
     pix = SceneTextureLookup(uv + offset,14,false).rgb;
     mean[0] += pix;
     var[0] += pix*pix;
@@ -22,9 +67,9 @@ for (y = (-1*l); y <= 0; y++) {
 }
 
 //Bottom Right Sub-Grid
-for (y = (-1*l); y <= 0; y++) {
-  for (x = l; x >= 0; x--) {
-    float2 offset = float2(x,y)*TexelSize;
+for (y = (-1*l_y); y <= 0; y++) {
+  for (x = l_x; x >= 0; x--) {
+    float2 offset = mul(float2(x,y)*TexelSize,rotation_matrix);
     pix = SceneTextureLookup(uv + offset,14,false).rgb;
     mean[1] += pix;
     var[1] += pix*pix;
@@ -32,9 +77,9 @@ for (y = (-1*l); y <= 0; y++) {
 }
 
 //Top Left Sub-Grid
-for (y = l; y >= 0; y--) {
-  for (x = (-1*l); x <= 0; x++) {
-    float2 offset = float2(x,y)*TexelSize;
+for (y = l_y; y >= 0; y--) {
+  for (x = (-1*l_x); x <= 0; x++) {
+    float2 offset = mul(float2(x,y)*TexelSize,rotation_matrix);
     pix = SceneTextureLookup(uv + offset,14,false).rgb;
     mean[2] += pix;
     var[2] += pix*pix;
@@ -42,9 +87,9 @@ for (y = l; y >= 0; y--) {
 }
 
 //Top Right Sub-Grid
-for (y = l; y >= 0; y--) {
-  for (x = l; x >= 0; x--) {
-    float2 offset = float2(x,y)*TexelSize;
+for (y = l_y; y >= 0; y--) {
+  for (x = l_x; x >= 0; x--) {
+    float2 offset = mul(float2(x,y)*TexelSize,rotation_matrix);
     pix = SceneTextureLookup(uv + offset,14,false).rgb;
     mean[3] += pix;
     var[3] += pix*pix;
@@ -63,6 +108,29 @@ for (int i = 0; i < 4; i++) {
     color = mean[i];
   }
 }
-
+// //generating random canvas texture
+// struct RandomNumber {
+//   float random(float2 input) {
+//     float2 K1 = float2(
+//       23.14069263277926, // e^pi (Gelfond's constant)
+//       2.665144142690225 // 2^sqrt(2) (Gelfond–Schneider constant)
+//     );
+//     return frac(cos(dot(input,K1)) * 12345.6789);
+//   }
+// };
+// RandomNumber r;
+// /*
+// the reason this doesnt work is because every frame will compute the same uv cord since the seed
+// which is the camera_pos is the same for every pixel in the image
+// each image will have the same canvas
+// the seed must determine how the image is scattered and retrieved not the literal uv
+// */
+// float canvas_x = uv.x;
+// float canvas_y = uv.y;
+// if (time % 3 == 0) {
+//   canvas_x = r.random(float2(uv.x,time));
+//   canvas_y = r.random(float2(uv.y,time));
+// }
+float3 canvas_texture_color = Texture2DSample(Tex, TexSampler, uv);
 // Output Correct Color
-return color;
+return color*canvas_texture_color;

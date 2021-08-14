@@ -1,0 +1,56 @@
+//IMAGE SPACE CONTOUR DETECTION - MAIN OUTLINE - http://www.mva-org.jp/Proceedings/2017USB/papers/09-13.pdf
+#pragma once
+struct SobelHelpers {
+  float sobel_operation(float3 vec1, float3 vec2) {
+    float3 filter1 = float3(-1.0,-2.0,-1.0);
+    float3 filter2 = float3(1.0,2.0,1.0);
+    return dot(filter1,vec1) + dot(filter2,vec2);
+  }
+};
+SobelHelpers s_h;
+//UV Texture GET
+float2 uv = GetDefaultSceneTextureUV(Parameters, 14);
+//Stencil Index for Character
+float stencilIndex = 1;
+float3 color = SceneTextureLookup(uv,14,false).rgb;
+//if i am in the stencil
+if (SceneTextureLookup(uv,25,false).r == stencilIndex) {
+  //Screen Size
+  float2 TexelSize = View.ViewSizeAndInvSize.zw;
+  // UV coordinates based on Layout
+  // A B C
+  // D X E
+  // F G H
+  float3 A = SceneTextureLookup((float2(-1,1)*TexelSize) + uv,0,false).rgb;
+  float3 B = SceneTextureLookup((float2(0,1)*TexelSize) + uv,0,false).rgb;
+  float3 C = SceneTextureLookup((float2(1,1)*TexelSize) + uv,0,false).rgb;
+  float3 D = SceneTextureLookup((float2(-1,0)*TexelSize) + uv,0,false).rgb;
+  float3 E = SceneTextureLookup((float2(1,0)*TexelSize) + uv,0,false).rgb;
+  float3 F = SceneTextureLookup((float2(-1,-1)*TexelSize) + uv,0,false).rgb;
+  float3 G = SceneTextureLookup((float2(0,-1)*TexelSize) + uv,0,false).rgb;
+  float3 H = SceneTextureLookup((float2(1,-1)*TexelSize) + uv,0,false).rgb;
+  //sobel x differential
+  float dIxR = abs(s_h.sobel_operation(float3(A.r,D.r,F.r),float3(C.r,E.r,H.r)));
+  float dIyR = abs(s_h.sobel_operation(float3(A.r,B.r,C.r),float3(F.r,G.r,H.r)));
+  float dIxG = abs(s_h.sobel_operation(float3(A.g,D.g,F.g),float3(C.g,E.g,H.g)));
+  float dIyG = abs(s_h.sobel_operation(float3(A.g,B.g,C.g),float3(F.g,G.g,H.g)));
+  float dIxB = abs(s_h.sobel_operation(float3(A.b,D.b,F.b),float3(C.b,E.b,H.b)));
+  float dIyB = abs(s_h.sobel_operation(float3(A.b,B.b,C.b),float3(F.b,G.b,H.b)));
+  float dIx = max(dIxR,dIxG);
+  dIx = max(dIx,dIxB);
+  float dIy = max(dIyR,dIyG);
+  dIy = max(dIy,dIyB);
+  //dI
+  float dI = sqrt(pow(dIx,2.0)+pow(dIy,2.0));
+  // float dI = (1/sqrt(2)) * sqrt(pow(dIx,2.0)+pow(dIy,2.0));
+  if (dI > 0.2) {
+    color = float3(1,1,1);
+  } //else {
+    //color = float3(0,0,0);
+  //}
+  //hand stroke
+  //pencil shade
+  //opacity
+}
+//return single float value (grayscale img)
+return color;
