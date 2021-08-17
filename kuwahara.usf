@@ -38,7 +38,7 @@ struct SobelHelpers {
 }; SobelHelpers s_h;
 
 
-
+float dof_distance = View.DepthOfFieldFocalDistance;
 float2 uv = GetDefaultSceneTextureUV(Parameters, 14);
 float n = float(x_radius * y_radius);
 float3 zero = float3(0, 0, 0);
