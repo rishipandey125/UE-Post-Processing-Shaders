@@ -44,6 +44,8 @@ float n = float(x_radius * y_radius);
 float3 zero = float3(0, 0, 0);
 float3 mean[4] = {zero, zero, zero, zero};
 float3 var[4] = {zero, zero, zero, zero};
+//  Scene Depth in Linear World Units
+float depth_world_units = ConvertFromDeviceZ(SceneTextureLookup(uv,2,false).r);
 int l_x = x_radius - 1;
 int l_y = y_radius - 1;
 //Screen Size
