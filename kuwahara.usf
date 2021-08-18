@@ -36,8 +36,10 @@ struct SobelHelpers {
     return float2(dIx,dIy);
   }
 }; SobelHelpers s_h;
-
-
+/*
+Circle of Confusion: The plane a certain distance away from a point determines what is exactly in focus.
+The rest of the points around that are out of focus.
+*/
 float dof_distance = View.DepthOfFieldFocalDistance;
 float2 uv = GetDefaultSceneTextureUV(Parameters, 14);
 float n = float(x_radius * y_radius);
@@ -46,6 +48,8 @@ float3 mean[4] = {zero, zero, zero, zero};
 float3 var[4] = {zero, zero, zero, zero};
 //  Scene Depth in Linear World Units
 float depth_world_units = ConvertFromDeviceZ(SceneTextureLookup(uv,2,false).r);
+//SHOULD THE COC VALUE USE THE NORMAL SCENE DEPTH OR THE DEPTH WORLD UNITS???
+float coc_value = ComputeCircleOfConfusion(depth_world_units);
 int l_x = x_radius - 1;
 int l_y = y_radius - 1;
 //Screen Size
