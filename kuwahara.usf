@@ -138,7 +138,7 @@ for (int i = 0; i < 4; i++) {
 //   canvas_x = r.random(float2(uv.x,time));
 //   canvas_y = r.random(float2(uv.y,time));
 // }
-float3 canvas_texture_color = Texture2DSample(Tex, TexSampler, uv);
+//float3 canvas_texture_color = Texture2DSample(Tex, TexSampler, uv);
 // Output Correct Color
 //return color*canvas_texture_color;
-return float3(coc_value);
+return float3(coc_value,coc_value,coc_value);
