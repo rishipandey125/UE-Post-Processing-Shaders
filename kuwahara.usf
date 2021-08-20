@@ -49,7 +49,7 @@ float3 var[4] = {zero, zero, zero, zero};
 //  Scene Depth in Linear World Units
 float depth_world_units = ConvertFromDeviceZ(SceneTextureLookup(uv,2,false).r);
 //SHOULD THE COC VALUE USE THE NORMAL SCENE DEPTH OR THE DEPTH WORLD UNITS???
-float coc_value = ComputeCircleOfConfusion(depth_world_units);
+float coc_value = SceneTextureLookup(uv,2,false).r;
 //float coc_value = ComputeCircleOfConfusion(SceneTextureLookup(uv,2,false).r);
 
 int l_x = x_radius - 1;
