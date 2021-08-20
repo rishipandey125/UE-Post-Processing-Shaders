@@ -40,7 +40,6 @@ struct SobelHelpers {
 Circle of Confusion: The plane a certain distance away from a point determines what is exactly in focus.
 The rest of the points around that are out of focus.
 */
-float dof_distance = View.DepthOfFieldFocalDistance;
 float2 uv = GetDefaultSceneTextureUV(Parameters, 14);
 float n = float(x_radius * y_radius);
 float3 zero = float3(0, 0, 0);
@@ -53,8 +52,8 @@ float3 var[4] = {zero, zero, zero, zero};
 //let's try to just integrate the brushes and see how that goes
 float coc_value = ComputeCircleOfConfusion(SceneTextureLookup(uv,2,false).r);
 float MAX_RADIUS = 30.0;
-float dof_modified_x_radius = x_radius + coc_value*(MAX_RADIUS-x_radius);
-float dof_modified_y_radius = y_radius + coc_value*(MAX_RADIUS-y_radius);
+float dof_modified_x_radius = float(x_radius) + coc_value*(MAX_RADIUS-float(x_radius));
+float dof_modified_y_radius = float(y_radius) + coc_value*(MAX_RADIUS-float(y_radius));
 int l_x = int(dof_modified_x_radius) - 1;
 int l_y = int(dof_modified_y_radius) - 1;
 //Screen Size
