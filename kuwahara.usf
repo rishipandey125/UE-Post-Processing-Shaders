@@ -52,9 +52,8 @@ float3 var[4] = {zero, zero, zero, zero};
 //i dont think returning the texture works well for visualizing since the scene depth texture just returns black
 //let's try to just integrate the brushes and see how that goes
 float coc_value = ComputeCircleOfConfusion(SceneTextureLookup(uv,2,false).r);
-float MAX_RADIUS = 20.0;
-float dof_modified_x_radius = x_radius + coc_value*(MAX_RADIUS-x_radius);
-float dof_modified_y_radius = y_radius + coc_value*(MAX_RADIUS-y_radius);
+float dof_modified_x_radius = x_radius + coc_value*10;
+float dof_modified_y_radius = y_radius + coc_value*10;
 int l_x = dof_modified_x_radius - 1;
 int l_y = dof_modified_y_radius - 1;
 //Screen Size
