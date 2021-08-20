@@ -144,5 +144,4 @@ for (int i = 0; i < 4; i++) {
 // }
 //float3 canvas_texture_color = Texture2DSample(Tex, TexSampler, uv);
 // Output Correct Color
-//return color*canvas_texture_color;
-return float3(coc_value,coc_value,coc_value);
+return color*canvas_texture_color;
