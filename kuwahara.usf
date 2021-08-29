@@ -67,8 +67,8 @@ float theta = atan(sobel_grad.y/sobel_grad.x);
 int MAX_ITERATIONS = int(MAX_RADIUS);
 //rotational matrix
 float2x2 rotation_matrix = float2x2(cos(theta),-sin(theta), sin(theta), cos(theta));
-[unroll(MAX_ITERATIONS)] for (y = (-1*l_y); y <= 0; y++) {
-  [unroll(MAX_ITERATIONS)] for (x = (-1*l_x); x <= 0; x++) {
+[loop] for (y = (-1*l_y); y <= 0; y++) {
+  [loop] for (x = (-1*l_x); x <= 0; x++) {
     //rotate the offset around the edge theta
     float2 offset = mul(float2(x,y)*TexelSize,rotation_matrix);
     pix = SceneTextureLookup(uv + offset,14,false).rgb;
@@ -79,8 +79,8 @@ float2x2 rotation_matrix = float2x2(cos(theta),-sin(theta), sin(theta), cos(thet
 
 //Bottom Right Sub-Grid
 
-[unroll(MAX_ITERATIONS)] for (y = (-1*l_y); y <= 0; y++) {
-  [unroll(MAX_ITERATIONS)] for (x = l_x; x >= 0; x--) {
+[loop] for (y = (-1*l_y); y <= 0; y++) {
+  [loop] for (x = l_x; x >= 0; x--) {
     float2 offset = mul(float2(x,y)*TexelSize,rotation_matrix);
     pix = SceneTextureLookup(uv + offset,14,false).rgb;
     mean[1] += pix;
@@ -89,8 +89,8 @@ float2x2 rotation_matrix = float2x2(cos(theta),-sin(theta), sin(theta), cos(thet
 }
 
 //Top Left Sub-Grid
-[unroll(MAX_ITERATIONS)] for (y = l_y; y >= 0; y--) {
-  [unroll(MAX_ITERATIONS)] for (x = (-1*l_x); x <= 0; x++) {
+[loop] for (y = l_y; y >= 0; y--) {
+  [loop] for (x = (-1*l_x); x <= 0; x++) {
     float2 offset = mul(float2(x,y)*TexelSize,rotation_matrix);
     pix = SceneTextureLookup(uv + offset,14,false).rgb;
     mean[2] += pix;
@@ -99,8 +99,8 @@ float2x2 rotation_matrix = float2x2(cos(theta),-sin(theta), sin(theta), cos(thet
 }
 
 //Top Right Sub-Grid
-[unroll(MAX_ITERATIONS)] for (y = l_y; y >= 0; y--) {
-   [unroll(MAX_ITERATIONS)] for (x = l_x; x >= 0; x--) {
+[loop] for (y = l_y; y >= 0; y--) {
+   [loop] for (x = l_x; x >= 0; x--) {
     float2 offset = mul(float2(x,y)*TexelSize,rotation_matrix);
     pix = SceneTextureLookup(uv + offset,14,false).rgb;
     mean[3] += pix;
