@@ -64,7 +64,7 @@ int x = 0;
 float3 pix;
 float2 sobel_grad = s_h.sobel_gradient(uv,TexelSize);
 float theta = atan(sobel_grad.y/sobel_grad.x);
-int MAX_ITERATIONS = int(MAX_RADIUS)
+int MAX_ITERATIONS = int(MAX_RADIUS);
 //rotational matrix
 float2x2 rotation_matrix = float2x2(cos(theta),-sin(theta), sin(theta), cos(theta));
 [unroll(MAX_ITERATIONS)] for (y = (-1*l_y); y <= 0; y++) {
