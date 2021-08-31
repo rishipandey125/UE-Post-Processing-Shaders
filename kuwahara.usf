@@ -41,115 +41,118 @@ Circle of Confusion: The plane a certain distance away from a point determines w
 The rest of the points around that are out of focus.
 */
 float2 uv = GetDefaultSceneTextureUV(Parameters, 14);
-float n = float(x_radius * y_radius);
-float3 zero = float3(0, 0, 0);
-float3 mean[4] = {zero, zero, zero, zero};
-float3 var[4] = {zero, zero, zero, zero};
+// float n = float(x_radius * y_radius);
+// float3 zero = float3(0, 0, 0);
+// float3 mean[4] = {zero, zero, zero, zero};
+// float3 var[4] = {zero, zero, zero, zero};
 //  Scene Depth in Linear World Units
 float depth_world_units = ConvertFromDeviceZ(SceneTextureLookup(uv,2,false).r);
 //SHOULD THE COC VALUE USE THE NORMAL SCENE DEPTH OR THE DEPTH WORLD UNITS???
 //i dont think returning the texture works well for visualizing since the scene depth texture just returns black
 //let's try to just integrate the brushes and see how that goes
-float coc_value = DepthToCoc(SceneTextureLookup(uv,2,false).r);
-float NEAR = CalcUnfocusedPercentCustomBound(depth_world_units,1,0);
-//   half FAR = CalcUnfocusedPercentCustom(depth_world_units,0,1);
-float4 dof_debug_color = float4(1.0,0.0,0.0,1.0);
-if (NEAR > 0.0) {
-  dof_debug_color = float4(0.0,0.0,0.0,1.0);
-}
-float MAX_RADIUS = 30.0;
-float dof_modified_x_radius = float(x_radius) + coc_value*(MAX_RADIUS-float(x_radius));
-float dof_modified_y_radius = float(y_radius) + coc_value*(MAX_RADIUS-float(y_radius));
-const int l_x = int(dof_modified_x_radius) - 1;
-const int l_y = int(dof_modified_y_radius) - 1;
-//Screen Size
-float2 TexelSize = View.ViewSizeAndInvSize.zw;
-// Bottom Left Sub-Grid
-int y = 0;
-int x = 0;
-float3 pix;
-float2 sobel_grad = s_h.sobel_gradient(uv,TexelSize);
-float theta = atan(sobel_grad.y/sobel_grad.x);
-int MAX_ITERATIONS = int(MAX_RADIUS);
-//rotational matrix
-float2x2 rotation_matrix = float2x2(cos(theta),-sin(theta), sin(theta), cos(theta));
-[loop] for (y = (-1*l_y); y <= 0; y++) {
-  [loop] for (x = (-1*l_x); x <= 0; x++) {
-    //rotate the offset around the edge theta
-    float2 offset = mul(float2(x,y)*TexelSize,rotation_matrix);
-    pix = SceneTextureLookup(uv + offset,14,false).rgb;
-    mean[0] += pix;
-    var[0] += pix*pix;
-  }
-}
+half NEAR = CalcUnfocusedPercentCustomBound(depth_world_units,1,0);
+half FAR = CalcUnfocusedPercentCustomBound(depth_world_units,0,1);
+float4 OutColor = float4(0,0,0,0); //black in focus
+float4 FarColor = float4(0,0,1,1);
+float4 NearColor = float4(0,1,0,1);
 
-//Bottom Right Sub-Grid
+OutColor.rgba = lerp(OutColor.rgba,NearColor.rgba,NEAR);
+OutColor.rgba = lerp(OutColor.rgba,FarColor.rgba,FAR);
 
-[loop] for (y = (-1*l_y); y <= 0; y++) {
-  [loop] for (x = l_x; x >= 0; x--) {
-    float2 offset = mul(float2(x,y)*TexelSize,rotation_matrix);
-    pix = SceneTextureLookup(uv + offset,14,false).rgb;
-    mean[1] += pix;
-    var[1] += pix*pix;
-  }
-}
+return saturate(OutColor.rgba);
 
-//Top Left Sub-Grid
-[loop] for (y = l_y; y >= 0; y--) {
-  [loop] for (x = (-1*l_x); x <= 0; x++) {
-    float2 offset = mul(float2(x,y)*TexelSize,rotation_matrix);
-    pix = SceneTextureLookup(uv + offset,14,false).rgb;
-    mean[2] += pix;
-    var[2] += pix*pix;
-  }
-}
-
-//Top Right Sub-Grid
-[loop] for (y = l_y; y >= 0; y--) {
-   [loop] for (x = l_x; x >= 0; x--) {
-    float2 offset = mul(float2(x,y)*TexelSize,rotation_matrix);
-    pix = SceneTextureLookup(uv + offset,14,false).rgb;
-    mean[3] += pix;
-    var[3] += pix*pix;
-  }
-}
-
-// Selecting Correct Pixel Based on Lowest Variance
-float min_var = 1e+4;
-float3 color;
-for (int i = 0; i < 4; i++) {
-  mean[i] /= n;
-  float3 variance = abs((var[i]/n) - (mean[i]*mean[i]));
-  float v = variance.r + variance.g + variance.b;
-  if (v < min_var) {
-    min_var = v;
-    color = mean[i];
-  }
-}
-// //generating random canvas texture
-// struct RandomNumber {
-//   float random(float2 input) {
-//     float2 K1 = float2(
-//       23.14069263277926, // e^pi (Gelfond's constant)
-//       2.665144142690225 // 2^sqrt(2) (Gelfond–Schneider constant)
-//     );
-//     return frac(cos(dot(input,K1)) * 12345.6789);
+// float MAX_RADIUS = 30.0;
+// float dof_modified_x_radius = float(x_radius) + coc_value*(MAX_RADIUS-float(x_radius));
+// float dof_modified_y_radius = float(y_radius) + coc_value*(MAX_RADIUS-float(y_radius));
+// const int l_x = int(dof_modified_x_radius) - 1;
+// const int l_y = int(dof_modified_y_radius) - 1;
+// //Screen Size
+// float2 TexelSize = View.ViewSizeAndInvSize.zw;
+// // Bottom Left Sub-Grid
+// int y = 0;
+// int x = 0;
+// float3 pix;
+// float2 sobel_grad = s_h.sobel_gradient(uv,TexelSize);
+// float theta = atan(sobel_grad.y/sobel_grad.x);
+// int MAX_ITERATIONS = int(MAX_RADIUS);
+// //rotational matrix
+// float2x2 rotation_matrix = float2x2(cos(theta),-sin(theta), sin(theta), cos(theta));
+// [loop] for (y = (-1*l_y); y <= 0; y++) {
+//   [loop] for (x = (-1*l_x); x <= 0; x++) {
+//     //rotate the offset around the edge theta
+//     float2 offset = mul(float2(x,y)*TexelSize,rotation_matrix);
+//     pix = SceneTextureLookup(uv + offset,14,false).rgb;
+//     mean[0] += pix;
+//     var[0] += pix*pix;
 //   }
-// };
-// RandomNumber r;
-// /*
-// the reason this doesnt work is because every frame will compute the same uv cord since the seed
-// which is the camera_pos is the same for every pixel in the image
-// each image will have the same canvas
-// the seed must determine how the image is scattered and retrieved not the literal uv
-// */
-// float canvas_x = uv.x;
-// float canvas_y = uv.y;
-// if (time % 3 == 0) {
-//   canvas_x = r.random(float2(uv.x,time));
-//   canvas_y = r.random(float2(uv.y,time));
 // }
-float3 canvas_texture_color = Texture2DSample(Tex, TexSampler, uv);
+//
+// //Bottom Right Sub-Grid
+//
+// [loop] for (y = (-1*l_y); y <= 0; y++) {
+//   [loop] for (x = l_x; x >= 0; x--) {
+//     float2 offset = mul(float2(x,y)*TexelSize,rotation_matrix);
+//     pix = SceneTextureLookup(uv + offset,14,false).rgb;
+//     mean[1] += pix;
+//     var[1] += pix*pix;
+//   }
+// }
+//
+// //Top Left Sub-Grid
+// [loop] for (y = l_y; y >= 0; y--) {
+//   [loop] for (x = (-1*l_x); x <= 0; x++) {
+//     float2 offset = mul(float2(x,y)*TexelSize,rotation_matrix);
+//     pix = SceneTextureLookup(uv + offset,14,false).rgb;
+//     mean[2] += pix;
+//     var[2] += pix*pix;
+//   }
+// }
+//
+// //Top Right Sub-Grid
+// [loop] for (y = l_y; y >= 0; y--) {
+//    [loop] for (x = l_x; x >= 0; x--) {
+//     float2 offset = mul(float2(x,y)*TexelSize,rotation_matrix);
+//     pix = SceneTextureLookup(uv + offset,14,false).rgb;
+//     mean[3] += pix;
+//     var[3] += pix*pix;
+//   }
+// }
+//
+// // Selecting Correct Pixel Based on Lowest Variance
+// float min_var = 1e+4;
+// float3 color;
+// for (int i = 0; i < 4; i++) {
+//   mean[i] /= n;
+//   float3 variance = abs((var[i]/n) - (mean[i]*mean[i]));
+//   float v = variance.r + variance.g + variance.b;
+//   if (v < min_var) {
+//     min_var = v;
+//     color = mean[i];
+//   }
+// }
+// // //generating random canvas texture
+// // struct RandomNumber {
+// //   float random(float2 input) {
+// //     float2 K1 = float2(
+// //       23.14069263277926, // e^pi (Gelfond's constant)
+// //       2.665144142690225 // 2^sqrt(2) (Gelfond–Schneider constant)
+// //     );
+// //     return frac(cos(dot(input,K1)) * 12345.6789);
+// //   }
+// // };
+// // RandomNumber r;
+// // /*
+// // the reason this doesnt work is because every frame will compute the same uv cord since the seed
+// // which is the camera_pos is the same for every pixel in the image
+// // each image will have the same canvas
+// // the seed must determine how the image is scattered and retrieved not the literal uv
+// // */
+// // float canvas_x = uv.x;
+// // float canvas_y = uv.y;
+// // if (time % 3 == 0) {
+// //   canvas_x = r.random(float2(uv.x,time));
+// //   canvas_y = r.random(float2(uv.y,time));
+// // }
+// float3 canvas_texture_color = Texture2DSample(Tex, TexSampler, uv);
 // Output Correct Color
-return dof_debug_color;
 // return color*canvas_texture_color;
