@@ -52,14 +52,14 @@ float depth_world_units = ConvertFromDeviceZ(SceneTextureLookup(uv,2,false).r);
 //let's try to just integrate the brushes and see how that goes
 half NEAR = CalcUnfocusedPercentCustomBound(depth_world_units,1,0);
 half FAR = CalcUnfocusedPercentCustomBound(depth_world_units,0,1);
-float4 OutColor = float4(0,0,0,0); //black in focus
-float4 FarColor = float4(0,0,1,1);
-float4 NearColor = float4(0,1,0,1);
+float3 OutColor = float3(0,0,0); //black in focus
+float3 FarColor = float3(0,0,1);
+float3 NearColor = float3(0,1,0);
 
-OutColor.rgba = lerp(OutColor.rgba,NearColor.rgba,NEAR);
-OutColor.rgba = lerp(OutColor.rgba,FarColor.rgba,FAR);
+OutColor.rgb = lerp(OutColor.rgb,NearColor.rgb,NEAR);
+OutColor.rgb = lerp(OutColor.rgb,FarColor.rgb,FAR);
 
-return saturate(OutColor.rgba);
+return saturate(OutColor.rgb);
 
 // float MAX_RADIUS = 30.0;
 // float dof_modified_x_radius = float(x_radius) + coc_value*(MAX_RADIUS-float(x_radius));
