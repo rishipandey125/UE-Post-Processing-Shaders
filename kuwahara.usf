@@ -53,7 +53,7 @@ float depth_world_units = ConvertFromDeviceZ(SceneTextureLookup(uv,2,false).r);
 float coc_value = ComputeCircleOfConfusion(depth_world_units);
 // float coc_value = ComputeCircleOfConfusion(SceneTextureLookup(uv,2,false).r);
 float4 dof_debug_color = float4(1.0,0.0,0.0,1.0);
-if (coc_value > 0.02) {
+if (coc_value > 0.0) {
   dof_debug_color = float4(0.0,0.0,0.0,1.0);
 }
 float MAX_RADIUS = 30.0;
