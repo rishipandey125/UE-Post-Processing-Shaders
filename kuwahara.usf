@@ -46,21 +46,11 @@ float2 uv = GetDefaultSceneTextureUV(Parameters, 14);
 // float3 mean[4] = {zero, zero, zero, zero};
 // float3 var[4] = {zero, zero, zero, zero};
 //  Scene Depth in Linear World Units
-float depth_world_units = ConvertFromDeviceZ(SceneTextureLookup(uv,2,false).r);
 //SHOULD THE COC VALUE USE THE NORMAL SCENE DEPTH OR THE DEPTH WORLD UNITS???
 //i dont think returning the texture works well for visualizing since the scene depth texture just returns black
 //let's try to just integrate the brushes and see how that goes
-half NEAR = CalcUnfocusedPercentCustomBound(depth_world_units,1,0);
-half FAR = CalcUnfocusedPercentCustomBound(depth_world_units,0,1);
-float3 OutColor = float3(0,0,0); //black in focus
-float3 FarColor = float3(0,0,1);
-float3 NearColor = float3(0,1,0);
 
-OutColor.rgb = lerp(OutColor.rgb,NearColor.rgb,NEAR);
-OutColor.rgb = lerp(OutColor.rgb,FarColor.rgb,FAR);
-
-return saturate(OutColor.rgb);
-
+return float(1,0,0)*dof_value;
 // float MAX_RADIUS = 30.0;
 // float dof_modified_x_radius = float(x_radius) + coc_value*(MAX_RADIUS-float(x_radius));
 // float dof_modified_y_radius = float(y_radius) + coc_value*(MAX_RADIUS-float(y_radius));
