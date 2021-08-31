@@ -50,8 +50,8 @@ float depth_world_units = ConvertFromDeviceZ(SceneTextureLookup(uv,2,false).r);
 //SHOULD THE COC VALUE USE THE NORMAL SCENE DEPTH OR THE DEPTH WORLD UNITS???
 //i dont think returning the texture works well for visualizing since the scene depth texture just returns black
 //let's try to just integrate the brushes and see how that goes
-float coc_value = DepthToCoD(SceneTextureLookup(uv,2,false).r);
-float NEAR = CalcUnfocusedPercentCustom(depth_world_units,1,0);
+float coc_value = DepthToCoc(SceneTextureLookup(uv,2,false).r);
+float NEAR = CalcUnfocusedPercentCustomBound(depth_world_units,1,0);
 //   half FAR = CalcUnfocusedPercentCustom(depth_world_units,0,1);
 float4 dof_debug_color = float4(1.0,0.0,0.0,1.0);
 if (NEAR > 0.0) {
