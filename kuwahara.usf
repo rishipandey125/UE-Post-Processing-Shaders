@@ -50,7 +50,7 @@ float2 uv = GetDefaultSceneTextureUV(Parameters, 14);
 //i dont think returning the texture works well for visualizing since the scene depth texture just returns black
 //let's try to just integrate the brushes and see how that goes
 
-return float(1,0,0)*dof_value;
+return float3(1,0,0)*dof_value;
 // float MAX_RADIUS = 30.0;
 // float dof_modified_x_radius = float(x_radius) + coc_value*(MAX_RADIUS-float(x_radius));
 // float dof_modified_y_radius = float(y_radius) + coc_value*(MAX_RADIUS-float(y_radius));
