@@ -58,7 +58,8 @@ float theta = atan(sobel_grad.y/sobel_grad.x);
 int MAX_ITERATIONS = int(MAX_RADIUS);
 
 float SceneDepth = ConvertFromDeviceZ(SceneTextureLookup(uv,2,false).r);
-return ComputeCirlceOfConfusion(SceneDepth);
+float coc_value = ComputeCircleOfConfusion(SceneDepth);
+return coc_value;
 // //rotational matrix
 // float2x2 rotation_matrix = float2x2(cos(theta),-sin(theta), sin(theta), cos(theta));
 // [loop] for (y = (-1*l_y); y <= 0; y++) {
