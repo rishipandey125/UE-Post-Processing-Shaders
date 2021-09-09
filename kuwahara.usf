@@ -47,6 +47,7 @@ float dof_modified_x_radius = float(x_radius) + dof_value*(MAX_RADIUS-float(x_ra
 float dof_modified_y_radius = float(y_radius) + dof_value*(MAX_RADIUS-float(y_radius));
 const int l_x = int(dof_modified_x_radius) - 1;
 const int l_y = int(dof_modified_y_radius) - 1;
+const int MAX_ITERATIONS = int(MAX_RADIUS);
 //Screen Size
 float2 TexelSize = View.ViewSizeAndInvSize.zw;
 //Bottom Left Sub-Grid
@@ -55,7 +56,6 @@ int x = 0;
 float3 pix;
 float2 sobel_grad = s_h.sobel_gradient(uv,TexelSize);
 float theta = atan(sobel_grad.y/sobel_grad.x);
-int MAX_ITERATIONS = int(MAX_RADIUS);
 
 
 //the scene is created and UE dof is added. After DOF is already added Directional Kuwahara shading happens
@@ -63,44 +63,52 @@ int MAX_ITERATIONS = int(MAX_RADIUS);
 
 //rotational matrix
 float2x2 rotation_matrix = float2x2(cos(theta),-sin(theta), sin(theta), cos(theta));
- for (y = (-1*l_y); y <= 0; y++) {
-   for (x = (-1*l_x); x <= 0; x++) {
+ for (y = (-1*MAX_ITERATIONS); y <= 0; y++) {
+   for (x = (-1*MAX_ITERATIONS); x <= 0; x++) {
     //rotate the offset around the edge theta
-    float2 offset = mul(float2(x,y)*TexelSize,rotation_matrix);
-    pix = SceneTextureLookup(uv + offset,14,false).rgb;
-    mean[0] += pix;
-    var[0] += pix*pix;
+    if ((abs(y) <= l_y) && (abs(x) <= l_x)) {
+      float2 offset = mul(float2(x,y)*TexelSize,rotation_matrix);
+      pix = SceneTextureLookup(uv + offset,14,false).rgb;
+      mean[0] += pix;
+      var[0] += pix*pix;
+    }
   }
 }
 
 //Bottom Right Sub-Grid
 
- for (y = (-1*l_y); y <= 0; y++) {
-   for (x = l_x; x >= 0; x--) {
-    float2 offset = mul(float2(x,y)*TexelSize,rotation_matrix);
-    pix = SceneTextureLookup(uv + offset,14,false).rgb;
-    mean[1] += pix;
-    var[1] += pix*pix;
+ for (y = (-1*MAX_ITERATIONS); y <= 0; y++) {
+   for (x = MAX_ITERATIONS; x >= 0; x--) {
+     if ((abs(y) <= l_y) && (abs(x) <= l_x)) {
+       float2 offset = mul(float2(x,y)*TexelSize,rotation_matrix);
+       pix = SceneTextureLookup(uv + offset,14,false).rgb;
+       mean[1] += pix;
+       var[1] += pix*pix;
+     }
   }
 }
 
 //Top Left Sub-Grid
- for (y = l_y; y >= 0; y--) {
-   for (x = (-1*l_x); x <= 0; x++) {
-    float2 offset = mul(float2(x,y)*TexelSize,rotation_matrix);
-    pix = SceneTextureLookup(uv + offset,14,false).rgb;
-    mean[2] += pix;
-    var[2] += pix*pix;
+ for (y = MAX_ITERATIONS; y >= 0; y--) {
+   for (x = (-1*MAX_ITERATIONS); x <= 0; x++) {
+     if ((abs(y) <= l_y) && (abs(x) <= l_x)) {
+       float2 offset = mul(float2(x,y)*TexelSize,rotation_matrix);
+       pix = SceneTextureLookup(uv + offset,14,false).rgb;
+       mean[1] += pix;
+       var[1] += pix*pix;
+     }
   }
 }
 
 //Top Right Sub-Grid
- for (y = l_y; y >= 0; y--) {
-    for (x = l_x; x >= 0; x--) {
-    float2 offset = mul(float2(x,y)*TexelSize,rotation_matrix);
-    pix = SceneTextureLookup(uv + offset,14,false).rgb;
-    mean[3] += pix;
-    var[3] += pix*pix;
+ for (y = MAX_ITERATIONS; y >= 0; y--) {
+    for (x = MAX_ITERATIONS; x >= 0; x--) {
+      if ((abs(y) <= l_y) && (abs(x) <= l_x)) {
+        float2 offset = mul(float2(x,y)*TexelSize,rotation_matrix);
+        pix = SceneTextureLookup(uv + offset,14,false).rgb;
+        mean[1] += pix;
+        var[1] += pix*pix;
+      }
   }
 }
 
