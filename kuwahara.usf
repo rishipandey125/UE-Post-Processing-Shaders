@@ -42,12 +42,12 @@ float n = float(x_radius * y_radius);
 float3 zero = float3(0, 0, 0);
 float3 mean[4] = {zero, zero, zero, zero};
 float3 var[4] = {zero, zero, zero, zero};
-float MAX_RADIUS = 30.0;
+float MAX_RADIUS = 10.0;
 float dof_modified_x_radius = float(x_radius) + dof_value*(MAX_RADIUS-float(x_radius));
 float dof_modified_y_radius = float(y_radius) + dof_value*(MAX_RADIUS-float(y_radius));
 const int l_x = int(dof_modified_x_radius) - 1;
 const int l_y = int(dof_modified_y_radius) - 1;
-const int MAX_ITERATIONS = y_radius;
+const int MAX_ITERATIONS = int(MAX_RADIUS);
 //Screen Size
 float2 TexelSize = View.ViewSizeAndInvSize.zw;
 //Bottom Left Sub-Grid
