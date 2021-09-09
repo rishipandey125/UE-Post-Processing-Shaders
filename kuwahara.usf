@@ -47,7 +47,7 @@ float dof_modified_x_radius = float(x_radius) + dof_value*(MAX_RADIUS-float(x_ra
 float dof_modified_y_radius = float(y_radius) + dof_value*(MAX_RADIUS-float(y_radius));
 const int l_x = int(dof_modified_x_radius) - 1;
 const int l_y = int(dof_modified_y_radius) - 1;
-const int MAX_ITERATIONS = y_radius;
+const int MAX_ITERATIONS = float(MAX_RADIUS);
 //Screen Size
 float2 TexelSize = View.ViewSizeAndInvSize.zw;
 //Bottom Left Sub-Grid
@@ -94,8 +94,8 @@ float2x2 rotation_matrix = float2x2(cos(theta),-sin(theta), sin(theta), cos(thet
      // if ((abs(y) <= l_y) && (abs(x) <= l_x)) {
        float2 offset = mul(float2(x,y)*TexelSize,rotation_matrix);
        pix = SceneTextureLookup(uv + offset,14,false).rgb;
-       mean[1] += pix;
-       var[1] += pix*pix;
+       mean[2] += pix;
+       var[2] += pix*pix;
      // }
   }
 }
@@ -106,8 +106,8 @@ float2x2 rotation_matrix = float2x2(cos(theta),-sin(theta), sin(theta), cos(thet
       // if ((abs(y) <= l_y) && (abs(x) <= l_x)) {
         float2 offset = mul(float2(x,y)*TexelSize,rotation_matrix);
         pix = SceneTextureLookup(uv + offset,14,false).rgb;
-        mean[1] += pix;
-        var[1] += pix*pix;
+        mean[3] += pix;
+        var[3] += pix*pix;
       // }
   }
 }
