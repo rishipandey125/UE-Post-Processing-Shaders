@@ -47,7 +47,7 @@ float dof_modified_x_radius = float(x_radius) + dof_value*(MAX_RADIUS-float(x_ra
 float dof_modified_y_radius = float(y_radius) + dof_value*(MAX_RADIUS-float(y_radius));
 const int l_x = int(dof_modified_x_radius) - 1;
 const int l_y = int(dof_modified_y_radius) - 1;
-const int MAX_ITERATIONS = l_y;
+const int MAX_ITERATIONS = y_radius;
 //Screen Size
 float2 TexelSize = View.ViewSizeAndInvSize.zw;
 //Bottom Left Sub-Grid
