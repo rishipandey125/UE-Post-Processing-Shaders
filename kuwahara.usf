@@ -45,15 +45,8 @@ float3 zero = float3(0, 0, 0);
 float3 mean[4] = {zero, zero, zero, zero};
 float3 var[4] = {zero, zero, zero, zero};
 
-float MAX_RADIUS = 30.0;
-float dof_modified_x_radius = float(x_radius) + dof_value*(MAX_RADIUS-float(x_radius));
-float dof_modified_y_radius = float(y_radius) + dof_value*(MAX_RADIUS-float(y_radius));
-const int l_x = int(dof_modified_x_radius) - 1;
-const int l_y = int(dof_modified_y_radius) - 1;
-const int MAX_ITERATIONS = int(MAX_RADIUS);
-
-// int l_x = x_radius - 1;
-// int l_y = y_radius - 1;
+int l_x = x_radius - 1;
+int l_y = y_radius - 1;
 //Screen Size
 float2 TexelSize = View.ViewSizeAndInvSize.zw;
 // Bottom Left Sub-Grid
@@ -64,51 +57,43 @@ float2 sobel_grad = s_h.sobel_gradient(uv,TexelSize);
 float theta = atan(sobel_grad.y/sobel_grad.x);
 //rotational matrix
 float2x2 rotation_matrix = float2x2(cos(theta),-sin(theta), sin(theta), cos(theta));
-for (y = (-1*MAX_ITERATIONS); y <= 0; y++) {
-  for (x = (-1*MAX_ITERATIONS); x <= 0; x++) {
+for (y = (-1*l_x); y <= 0; y++) {
+  for (x = (-1*l_y); x <= 0; x++) {
     //rotate the offset around the edge theta
-    if (abs(y) <= l_y && abs(x) <= l_x) {
-      float2 offset = mul(float2(x,y)*TexelSize,rotation_matrix);
-      pix = SceneTextureLookup(uv + offset,14,false).rgb;
-      mean[0] += pix;
-      var[0] += pix*pix;
-    }
+    float2 offset = mul(float2(x,y)*TexelSize,rotation_matrix);
+    pix = SceneTextureLookup(uv + offset,14,false).rgb;
+    mean[0] += pix;
+    var[0] += pix*pix;
   }
 }
 
 //Bottom Right Sub-Grid
-for (y = (-1*MAX_ITERATIONS); y <= 0; y++) {
-  for (x = MAX_ITERATIONS; x >= 0; x--) {
-    if (abs(y) <= l_y && abs(x) <= l_x) {
-      float2 offset = mul(float2(x,y)*TexelSize,rotation_matrix);
-      pix = SceneTextureLookup(uv + offset,14,false).rgb;
-      mean[1] += pix;
-      var[1] += pix*pix;
-    }
+for (y = (-1*l_y); y <= 0; y++) {
+  for (x = l_x; x >= 0; x--) {
+    float2 offset = mul(float2(x,y)*TexelSize,rotation_matrix);
+    pix = SceneTextureLookup(uv + offset,14,false).rgb;
+    mean[1] += pix;
+    var[1] += pix*pix;
   }
 }
 
 //Top Left Sub-Grid
-for (y = MAX_ITERATIONS; y >= 0; y--) {
-  for (x = (-1*MAX_ITERATIONS); x <= 0; x++) {
-    if (abs(y) <= l_y && abs(x) <= l_x) {
-      float2 offset = mul(float2(x,y)*TexelSize,rotation_matrix);
-      pix = SceneTextureLookup(uv + offset,14,false).rgb;
-      mean[2] += pix;
-      var[2] += pix*pix;
-    }
+for (y = l_y; y >= 0; y--) {
+  for (x = (-1*l_x); x <= 0; x++) {
+    float2 offset = mul(float2(x,y)*TexelSize,rotation_matrix);
+    pix = SceneTextureLookup(uv + offset,14,false).rgb;
+    mean[2] += pix;
+    var[2] += pix*pix;
   }
 }
 
 //Top Right Sub-Grid
-for (y = MAX_ITERATIONS; y >= 0; y--) {
-  for (x = MAX_ITERATIONS; x >= 0; x--) {
-    if (abs(y) <= l_y && abs(x) <= l_x) {
-      float2 offset = mul(float2(x,y)*TexelSize,rotation_matrix);
-      pix = SceneTextureLookup(uv + offset,14,false).rgb;
-      mean[3] += pix;
-      var[3] += pix*pix;
-    }
+for (y = l_y; y >= 0; y--) {
+  for (x = l_x; x >= 0; x--) {
+    float2 offset = mul(float2(x,y)*TexelSize,rotation_matrix);
+    pix = SceneTextureLookup(uv + offset,14,false).rgb;
+    mean[3] += pix;
+    var[3] += pix*pix;
   }
 }
 
@@ -149,5 +134,4 @@ for (int i = 0; i < 4; i++) {
 // }
 float3 canvas_texture_color = Texture2DSample(Tex, TexSampler, uv);
 // Output Correct Color
-return float3(1,0,0)*dof_value;
-// return color*canvas_texture_color;
+return color*canvas_texture_color;
