@@ -55,7 +55,7 @@ int x = 0;
 float3 pix;
 float2 sobel_grad = s_h.sobel_gradient(uv,TexelSize);
 float dI = sqrt(pow(sobel_grad.x,2.0)+pow(sobel_grad.y,2.0));
-if (dI > 0.2) {
+if (dI > edge_threshold) {
   return float3(1,1,1);
 }
 float theta = atan(sobel_grad.y/sobel_grad.x);
