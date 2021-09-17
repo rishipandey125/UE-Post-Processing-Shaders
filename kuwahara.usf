@@ -1,4 +1,4 @@
-#pragma once
+// #pragma once
 
 struct SobelHelpers {
   float sobel_operation(float3 vec1, float3 vec2) {
@@ -54,7 +54,9 @@ int y = 0;
 int x = 0;
 float3 pix;
 float2 sobel_grad = s_h.sobel_gradient(uv,TexelSize);
-//float dI = sqrt(pow(sobel_grad.x,2.0)+pow(sobel_grad.y,2.0)); strength of the gradient for sobel (use for contouring)
+
+float dI = sqrt(pow(sobel_grad.x,2.0)+pow(sobel_grad.y,2.0));
+
 float theta = atan(sobel_grad.y/sobel_grad.x);
 //rotational matrix
 float2x2 rotation_matrix = float2x2(cos(theta),-sin(theta), sin(theta), cos(theta));
