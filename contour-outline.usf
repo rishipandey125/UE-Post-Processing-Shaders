@@ -10,6 +10,7 @@ struct SobelHelpers {
 SobelHelpers s_h;
 //UV Texture GET
 float2 uv = GetDefaultSceneTextureUV(Parameters, 14);
+float sobelThreshold = 0.2;
 //Stencil Index for Character
 float stencilIndex = 1;
 float3 color = SceneTextureLookup(uv,14,false).rgb;
@@ -42,9 +43,14 @@ if (SceneTextureLookup(uv,25,false).r == stencilIndex) {
   dIy = max(dIy,dIyB);
   //dI
   float dI = sqrt(pow(dIx,2.0)+pow(dIy,2.0));
+  if (dI > sobelThreshold) {
+    // should be an edge
+    float contourTextureLookupValue = dI/(1.0-sobelThreshold);
+    return Texture2DSample(Tex, TexSampler, float2(contourTextureLookupValue,contourTextureLookupValue));
+
+  }
   // float dI = (1/sqrt(2)) * sqrt(pow(dIx,2.0)+pow(dIy,2.0));
 
-  return Texture2DSample(Tex, TexSampler, float2(dI,dI));
   //hand stroke
   //pencil shade
   //opacity
