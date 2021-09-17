@@ -10,7 +10,7 @@ struct SobelHelpers {
 SobelHelpers s_h;
 //UV Texture GET
 float2 uv = GetDefaultSceneTextureUV(Parameters, 14);
-float sobelThreshold = 0.2;
+float sobelThreshold = 0.4;
 //Stencil Index for Character
 float stencilIndex = 1;
 float3 color = SceneTextureLookup(uv,14,false).rgb;
