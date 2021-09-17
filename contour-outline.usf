@@ -43,10 +43,11 @@ if (SceneTextureLookup(uv,25,false).r == stencilIndex) {
   //dI
   float dI = sqrt(pow(dIx,2.0)+pow(dIy,2.0));
   // float dI = (1/sqrt(2)) * sqrt(pow(dIx,2.0)+pow(dIy,2.0));
-  return float3(dI,dI,dI);
+
+  return Texture2DSample(Tex, TexSampler, float2(dI,dI));
   //hand stroke
   //pencil shade
   //opacity
 }
 //return single float value (grayscale img)
-return float3(0,0,0);
+return float3(1,1,1);
