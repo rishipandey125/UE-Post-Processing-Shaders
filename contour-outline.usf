@@ -45,11 +45,11 @@ if (SceneTextureLookup(uv,25,false).r == stencilIndex) {
   float dI = sqrt(pow(dIx,2.0)+pow(dIy,2.0));
   if (dI > sobelThreshold) {
     // should be an edge
+    float theta = atan(dIy/dIx);
     float contourTextureLookupValue = dI/(1.0-sobelThreshold);
     return Texture2DSample(Tex, TexSampler, float2(contourTextureLookupValue,contourTextureLookupValue));
 
   }
-  // float dI = (1/sqrt(2)) * sqrt(pow(dIx,2.0)+pow(dIy,2.0));
 
   //hand stroke
   //pencil shade
