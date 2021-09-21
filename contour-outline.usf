@@ -53,7 +53,7 @@ if (SceneTextureLookup(uv,25,false).r == stencilIndex) {
   float dI = sqrt(pow(dIx,2.0)+pow(dIy,2.0));
   if (dI > sobelThreshold) {
     float angle = s_h.normalized_angle(dIx,dIy);
-    return angle*float3(1,0,0);
+    return lerp(float3(1,0,0),float3(0,1,0),angle);
     // should be an edge
     // float contourTextureLookupValue = dI/(1.0-sobelThreshold);
     // return Texture2DSample(Tex, TexSampler, float2(contourTextureLookupValue,contourTextureLookupValue));
