@@ -6,6 +6,14 @@ struct SobelHelpers {
     float3 filter2 = float3(1.0,2.0,1.0);
     return dot(filter1,vec1) + dot(filter2,vec2);
   }
+
+  float normalized_angle(float dx, float dy) {
+    static const float PI = 3.14159265f;
+    float theta = atan2(dy/dx);
+    theta += PI;
+    theta /= 2*PI;
+    return theta;
+  }
 };
 SobelHelpers s_h;
 //UV Texture GET
@@ -44,10 +52,11 @@ if (SceneTextureLookup(uv,25,false).r == stencilIndex) {
   //dI
   float dI = sqrt(pow(dIx,2.0)+pow(dIy,2.0));
   if (dI > sobelThreshold) {
+    float angle = s_h.normalized_angle(dIx,dIy);
+    return angle*float3(1,0,0);
     // should be an edge
-    float theta = atan(dIy/dIx);
-    float contourTextureLookupValue = dI/(1.0-sobelThreshold);
-    return Texture2DSample(Tex, TexSampler, float2(contourTextureLookupValue,contourTextureLookupValue));
+    // float contourTextureLookupValue = dI/(1.0-sobelThreshold);
+    // return Texture2DSample(Tex, TexSampler, float2(contourTextureLookupValue,contourTextureLookupValue));
 
   }
 

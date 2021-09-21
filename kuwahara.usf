@@ -57,7 +57,7 @@ float2 sobel_grad = s_h.sobel_gradient(uv,TexelSize);
 
 float dI = sqrt(pow(sobel_grad.x,2.0)+pow(sobel_grad.y,2.0));
 
-float theta = atan(sobel_grad.y/sobel_grad.x);
+float theta = atan2(sobel_grad.y/sobel_grad.x); //changed this from atan to atan2
 //rotational matrix
 float2x2 rotation_matrix = float2x2(cos(theta),-sin(theta), sin(theta), cos(theta));
 for (y = (-1*l_x); y <= 0; y++) {
