@@ -10,8 +10,8 @@ struct SobelHelpers {
   float normalized_angle(float dx, float dy) {
     static const float PI = 3.14159265f;
     float theta = atan(dy/dx);
-    theta += (PI/2);
-    theta /= PI;
+    theta += (PI);
+    theta /= (2*PI);
     return theta;
   }
 };
