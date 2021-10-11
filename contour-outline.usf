@@ -1,68 +1,100 @@
 //IMAGE SPACE CONTOUR DETECTION - MAIN OUTLINE - http://www.mva-org.jp/Proceedings/2017USB/papers/09-13.pdf
 #pragma once
-struct SobelHelpers {
+
+struct CannyHelpers {
   float sobel_operation(float3 vec1, float3 vec2) {
-    float3 filter1 = float3(-1.0,-2.0,-1.0);
-    float3 filter2 = float3(1.0,2.0,1.0);
-    return dot(filter1,vec1) + dot(filter2,vec2);
+      float3 filter1 = float3(-1.0,-2.0,-1.0);
+      float3 filter2 = float3(1.0,2.0,1.0);
+      return dot(filter1,vec1) + dot(filter2,vec2);
   }
 
-  float normalized_angle(float dx, float dy) {
-    static const float PI = 3.14159265f;
-    float theta = atan(dy/dx);
-    theta += (PI);
-    theta /= (2*PI);
-    return theta;
+  float3 sobel_gradient(float2 uv, float2 TexelSize) {
+    // UV coordinates based on Layout
+    // A B C
+    // D X E
+    // F G H
+    float3 A = SceneTextureLookup((float2(-1,1)*TexelSize) + uv,0,false).rgb;
+    float3 B = SceneTextureLookup((float2(0,1)*TexelSize) + uv,0,false).rgb;
+    float3 C = SceneTextureLookup((float2(1,1)*TexelSize) + uv,0,false).rgb;
+    float3 D = SceneTextureLookup((float2(-1,0)*TexelSize) + uv,0,false).rgb;
+    float3 E = SceneTextureLookup((float2(1,0)*TexelSize) + uv,0,false).rgb;
+    float3 F = SceneTextureLookup((float2(-1,-1)*TexelSize) + uv,0,false).rgb;
+    float3 G = SceneTextureLookup((float2(0,-1)*TexelSize) + uv,0,false).rgb;
+    float3 H = SceneTextureLookup((float2(1,-1)*TexelSize) + uv,0,false).rgb;
+
+    //sobel x & y differential per channel
+    float dIxR = abs(sobel_operation(float3(A.r,D.r,F.r),float3(C.r,E.r,H.r)));
+    float dIyR = abs(sobel_operation(float3(A.r,B.r,C.r),float3(F.r,G.r,H.r)));
+    float dIxG = abs(sobel_operation(float3(A.g,D.g,F.g),float3(C.g,E.g,H.g)));
+    float dIyG = abs(sobel_operation(float3(A.g,B.g,C.g),float3(F.g,G.g,H.g)));
+    float dIxB = abs(sobel_operation(float3(A.b,D.b,F.b),float3(C.b,E.b,H.b)));
+    float dIyB = abs(sobel_operation(float3(A.b,B.b,C.b),float3(F.b,G.b,H.b)));
+    //identifying grad_x & grad_y
+    float dIx = max(dIxR,dIxG);
+    dIx = max(dIx,dIxB);
+    float dIy = max(dIyR,dIyG);
+    dIy = max(dIy,dIyB);
+    float dI = sqrt(pow(dIx,2.0)+pow(dIy,2.0));
+    return float3(dIx,dIy,dI);
   }
-};
-SobelHelpers s_h;
-//UV Texture GET
-float2 uv = GetDefaultSceneTextureUV(Parameters, 14);
-float sobelThreshold = 0.4;
-//Stencil Index for Character
-float stencilIndex = 1;
-float3 color = SceneTextureLookup(uv,14,false).rgb;
-//if i am in the stencil
-if (SceneTextureLookup(uv,25,false).r == stencilIndex) {
-  //Screen Size
-  float2 TexelSize = View.ViewSizeAndInvSize.zw;
+
+  float2 non_maximum_suppression_double_threshold(float2 uv, float2 TexelSize) {
+    //step 1 get the sobel magnitude
+    float3 sobel_grad = sobel_gradient(uv,TexelSize);
+    //step 2 Non-Maximum Suppression
+    float theta = atan2(sobel_grad.y/sobel_grad.x); //changed this from atan to atan2
+    float2x2 rotation_matrix = float2x2(cos(theta),-sin(theta), sin(theta), cos(theta));
+    float2 offset_left = mul(float2(-1,0)*TexelSize,rotation_matrix);
+    float2 offset_right = mul(float2(1,0)*TexelSize,rotation_matrix);
+    float3 sobel_grad_left = s_h.sobel_gradient(uv+offset_left,TexelSize);
+    float3 sobel_grad_right = s_h.sobel_gradient(uv+offset_right,TexelSize);
+    float edge = sobel_grad.z;
+    if ((edge < sobel_grad_left.z) || (edge < sobel_grad_right.z)) {
+      edge = 0;
+    }
+
+    //step 3 double threshold
+    float2 threshold_response = vec2(edge > lower ? edge : 0, edge > upper ? edge : 0);
+    return threshold_response;
+  }
+}; CannyHelpers c_h;
+
+float2 uv = GetDefaultSceneTextureUV(Parameters,14);
+float2 TexelSize = View.ViewSizeAndInvSize.zw;
+float lower = 0.3;
+float upper = 0.7;
+//step 1 get the sobel magnitude
+float2 threshold_response = c_h.non_maximum_suppression_double_threshold(uv,TexelSize);
+
+/*
+threshold_response = (lower_response,upper_response)
+(0,0) -> not an edge
+(edge, 0) -> potentially an edge
+(0,edge) -> not possible
+(edge, edge) -> positive edge
+*/
+
+
+if (threshold_response == float2(0,0)) {
+  return 0.0;
+} else if (threshold_response == float2(edge,edge)) {
+  return 1.0;
+} else {
+  //step 4 edge tracking by hysteresis
+  //this is a weak pixel, if it surrounded by a strong pixel then set this one to strong
   // UV coordinates based on Layout
   // A B C
   // D X E
   // F G H
-  float3 A = SceneTextureLookup((float2(-1,1)*TexelSize) + uv,0,false).rgb;
-  float3 B = SceneTextureLookup((float2(0,1)*TexelSize) + uv,0,false).rgb;
-  float3 C = SceneTextureLookup((float2(1,1)*TexelSize) + uv,0,false).rgb;
-  float3 D = SceneTextureLookup((float2(-1,0)*TexelSize) + uv,0,false).rgb;
-  float3 E = SceneTextureLookup((float2(1,0)*TexelSize) + uv,0,false).rgb;
-  float3 F = SceneTextureLookup((float2(-1,-1)*TexelSize) + uv,0,false).rgb;
-  float3 G = SceneTextureLookup((float2(0,-1)*TexelSize) + uv,0,false).rgb;
-  float3 H = SceneTextureLookup((float2(1,-1)*TexelSize) + uv,0,false).rgb;
-  //sobel x differential
-  float dIxR = abs(s_h.sobel_operation(float3(A.r,D.r,F.r),float3(C.r,E.r,H.r)));
-  float dIyR = abs(s_h.sobel_operation(float3(A.r,B.r,C.r),float3(F.r,G.r,H.r)));
-  float dIxG = abs(s_h.sobel_operation(float3(A.g,D.g,F.g),float3(C.g,E.g,H.g)));
-  float dIyG = abs(s_h.sobel_operation(float3(A.g,B.g,C.g),float3(F.g,G.g,H.g)));
-  float dIxB = abs(s_h.sobel_operation(float3(A.b,D.b,F.b),float3(C.b,E.b,H.b)));
-  float dIyB = abs(s_h.sobel_operation(float3(A.b,B.b,C.b),float3(F.b,G.b,H.b)));
-  float dIx = max(dIxR,dIxG);
-  dIx = max(dIx,dIxB);
-  float dIy = max(dIyR,dIyG);
-  dIy = max(dIy,dIyB);
-  //dI
-  float dI = sqrt(pow(dIx,2.0)+pow(dIy,2.0));
-  if (dI > sobelThreshold) {
-    float angle = s_h.normalized_angle(dIx,dIy);
-    return lerp(float3(1,0,0),float3(0,1,0),angle);
-    // should be an edge
-    // float contourTextureLookupValue = dI/(1.0-sobelThreshold);
-    // return Texture2DSample(Tex, TexSampler, float2(contourTextureLookupValue,contourTextureLookupValue));
-
+  //construct and loop through - after every calculation check if that edge is strong and return early if you can
+  for (int y = 1; y >= -1; y--) {
+    for (int x = -1; x <= 1; x++) {
+      float uv_offset = (float2(x,y) * TexelSize) + uv;
+      float2 hysteresis_threshold_response = c_h.non_maximum_suppression_double_threshold(uv_offset,TexelSize);
+      if (hysteresis_threshold_response.y > 0.0) {
+        return 1.0;
+      }
+    }
   }
-
-  //hand stroke
-  //pencil shade
-  //opacity
 }
-//return single float value (grayscale img)
-return float3(1,1,1);
+return 0.0;
