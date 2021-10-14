@@ -46,8 +46,8 @@ struct CannyHelpers {
     float2x2 rotation_matrix = float2x2(cos(theta),-sin(theta), sin(theta), cos(theta));
     float2 offset_left = mul(float2(-1,0)*TexelSize,rotation_matrix);
     float2 offset_right = mul(float2(1,0)*TexelSize,rotation_matrix);
-    float3 sobel_grad_left = s_h.sobel_gradient(uv+offset_left,TexelSize);
-    float3 sobel_grad_right = s_h.sobel_gradient(uv+offset_right,TexelSize);
+    float3 sobel_grad_left = sobel_gradient(uv+offset_left,TexelSize);
+    float3 sobel_grad_right = sobel_gradient(uv+offset_right,TexelSize);
     float edge = sobel_grad.z;
     if ((edge < sobel_grad_left.z) || (edge < sobel_grad_right.z)) {
       edge = 0;
@@ -102,4 +102,4 @@ if (threshold_response == float2(0,0)) {
     }
   }
 }
-return 0.0; 
+return 0.0;
