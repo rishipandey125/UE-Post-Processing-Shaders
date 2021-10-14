@@ -44,6 +44,8 @@ float2 uv = GetDefaultSceneTextureUV(Parameters,14);
 if (SceneTextureLookup(uv,25,false).r == stencilIndex) {
   float2 TexelSize = View.ViewSizeAndInvSize.zw;
   float3 sobel_response = c_h.sobel_gradient(uv,TexelSize);
-  return sobel_response.z;
+  if (sobel_response.z >= 0.7) {
+    return 1.0;
+  }
 }
 return 0.0;
