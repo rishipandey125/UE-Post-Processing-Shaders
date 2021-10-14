@@ -42,7 +42,7 @@ struct CannyHelpers {
     //step 1 get the sobel magnitude
     float3 sobel_grad = sobel_gradient(uv,TexelSize);
     //step 2 Non-Maximum Suppression
-    float theta = atan2(sobel_grad.y/sobel_grad.x); //changed this from atan to atan2
+    float theta = atan(sobel_grad.y/sobel_grad.x); //changed this from atan to atan2
     float2x2 rotation_matrix = float2x2(cos(theta),-sin(theta), sin(theta), cos(theta));
     float2 offset_left = mul(float2(-1,0)*TexelSize,rotation_matrix);
     float2 offset_right = mul(float2(1,0)*TexelSize,rotation_matrix);
@@ -54,7 +54,7 @@ struct CannyHelpers {
     }
 
     //step 3 double threshold
-    float2 threshold_response = vec2(edge > lower ? edge : 0, edge > upper ? edge : 0);
+    float2 threshold_response = float2(edge > lower ? edge : 0, edge > upper ? edge : 0);
     return threshold_response;
   }
 }; CannyHelpers c_h;
@@ -75,7 +75,7 @@ threshold_response = (lower_response,upper_response)
 */
 
 
-if (threshold_response == float2(0,0)) {
+if (threshold_response.x == 0.0 && threshold_response.y == 0.0) {
   //not an edge
   return 0.0;
 } else if (threshold_response.y > 0.0) {
@@ -92,9 +92,9 @@ if (threshold_response == float2(0,0)) {
   for (int y = 1; y >= -1; y--) {
     for (int x = -1; x <= 1; x++) {
       //get A...H
-      float uv_offset = (float2(x,y) * TexelSize) + uv;
+      float2 uv_offset = (float2(x,y) * TexelSize) + uv;
       //check if it is a strong response
-      float2 hysteresis_threshold_response = c_h.non_maximum_suppression_double_threshold(uv_offset,TexelSize);
+      float2 hysteresis_threshold_response = c_h.non_maximum_suppression_double_threshold(uv_offset,TexelSize,lower,upper);
       if (hysteresis_threshold_response.y > 0.0) {
         //if it is then this weak response is an edge
         return 1.0;
