@@ -52,52 +52,54 @@ struct CannyHelpers {
     if ((edge < sobel_grad_left.z) || (edge < sobel_grad_right.z)) {
       edge = 0;
     }
-
     //step 3 double threshold
     float2 threshold_response = float2(edge > lower ? edge : 0, edge > upper ? edge : 0);
     return threshold_response;
   }
 }; CannyHelpers c_h;
 
+float stencilIndex = 1;
 float2 uv = GetDefaultSceneTextureUV(Parameters,14);
-float2 TexelSize = View.ViewSizeAndInvSize.zw;
-float lower = 0.3;
-float upper = 0.7;
-//step 1 get the sobel magnitude
-float2 threshold_response = c_h.non_maximum_suppression_double_threshold(uv,TexelSize,lower,upper);
+if (SceneTextureLookup(uv,25,false).r == stencilIndex) {
+  float2 TexelSize = View.ViewSizeAndInvSize.zw;
+  float lower = 0.3;
+  float upper = 0.7;
+  //step 1 get the sobel magnitude
+  float2 threshold_response = c_h.non_maximum_suppression_double_threshold(uv,TexelSize,lower,upper);
 
-/*
-threshold_response = (lower_response,upper_response)
-(0,0) -> not an edge
-(edge, 0) -> potentially an edge
-(0,edge) -> not possible
-(edge, edge) -> positive edge
-*/
+  /*
+  threshold_response = (lower_response,upper_response)
+  (0,0) -> not an edge
+  (edge, 0) -> potentially an edge
+  (0,edge) -> not possible
+  (edge, edge) -> positive edge
+  */
 
 
-if (threshold_response.x == 0.0 && threshold_response.y == 0.0) {
-  //not an edge
-  return 0.0;
-} else if (threshold_response.y > 0.0) {
-  //strong response
-  return 1.0;
-} else {
-  //weak response
-  //step 4 edge tracking by hysteresis
-  //this is a weak pixel, if it surrounded by a strong pixel then set this one to strong
-  // UV coordinates based on Layout
-  // A B C
-  // D X E
-  // F G H
-  for (int y = 1; y >= -1; y--) {
-    for (int x = -1; x <= 1; x++) {
-      //get A...H
-      float2 uv_offset = (float2(x,y) * TexelSize) + uv;
-      //check if it is a strong response
-      float2 hysteresis_threshold_response = c_h.non_maximum_suppression_double_threshold(uv_offset,TexelSize,lower,upper);
-      if (hysteresis_threshold_response.y > 0.0) {
-        //if it is then this weak response is an edge
-        return 1.0;
+  if (threshold_response.x == 0.0 && threshold_response.y == 0.0) {
+    //not an edge
+    return 0.0;
+  } else if (threshold_response.y > 0.0) {
+    //strong response
+    return 1.0;
+  } else {
+    //weak response
+    //step 4 edge tracking by hysteresis
+    //this is a weak pixel, if it surrounded by a strong pixel then set this one to strong
+    // UV coordinates based on Layout
+    // A B C
+    // D X E
+    // F G H
+    for (int y = 1; y >= -1; y--) {
+      for (int x = -1; x <= 1; x++) {
+        //get A...H
+        float2 uv_offset = (float2(x,y) * TexelSize) + uv;
+        //check if it is a strong response
+        float2 hysteresis_threshold_response = c_h.non_maximum_suppression_double_threshold(uv_offset,TexelSize,lower,upper);
+        if (hysteresis_threshold_response.y > 0.0) {
+          //if it is then this weak response is an edge
+          return 1.0;
+        }
       }
     }
   }
