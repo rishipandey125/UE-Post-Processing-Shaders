@@ -42,7 +42,7 @@ struct CannyHelpers {
     //step 1 get the sobel magnitude
     float3 sobel_grad = sobel_gradient(uv,TexelSize);
     //step 2 Non-Maximum Suppression
-    float theta = atan(sobel_grad.y/sobel_grad.x); 
+    float theta = atan(sobel_grad.y/sobel_grad.x);
     float2x2 rotation_matrix = float2x2(cos(theta),-sin(theta), sin(theta), cos(theta));
     float2 offset_left = mul(float2(-1,0)*TexelSize,rotation_matrix);
     float2 offset_right = mul(float2(1,0)*TexelSize,rotation_matrix);
@@ -62,8 +62,8 @@ float stencilIndex = 1;
 float2 uv = GetDefaultSceneTextureUV(Parameters,14);
 if (SceneTextureLookup(uv,25,false).r == stencilIndex) {
   float2 TexelSize = View.ViewSizeAndInvSize.zw;
-  float lower = 0.3;
-  float upper = 0.7;
+  float lower = 0.2;
+  float upper = 0.6;
   //step 1 get the sobel magnitude
   float2 threshold_response = c_h.non_maximum_suppression_double_threshold(uv,TexelSize,lower,upper);
 
