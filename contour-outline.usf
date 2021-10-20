@@ -8,19 +8,19 @@ struct CannyHelpers {
       return dot(filter1,vec1) + dot(filter2,vec2);
   }
 
-  float3 sobel_gradient(float2 uv, float2 TexelSize) {
+  float3 sobel_gradient(float2 uv, float2 TexelSize, int textureID) {
     // UV coordinates based on Layout
     // A B C
     // D X E
     // F G H
-    float3 A = SceneTextureLookup((float2(-1,1)*TexelSize) + uv,0,false).rgb;
-    float3 B = SceneTextureLookup((float2(0,1)*TexelSize) + uv,0,false).rgb;
-    float3 C = SceneTextureLookup((float2(1,1)*TexelSize) + uv,0,false).rgb;
-    float3 D = SceneTextureLookup((float2(-1,0)*TexelSize) + uv,0,false).rgb;
-    float3 E = SceneTextureLookup((float2(1,0)*TexelSize) + uv,0,false).rgb;
-    float3 F = SceneTextureLookup((float2(-1,-1)*TexelSize) + uv,0,false).rgb;
-    float3 G = SceneTextureLookup((float2(0,-1)*TexelSize) + uv,0,false).rgb;
-    float3 H = SceneTextureLookup((float2(1,-1)*TexelSize) + uv,0,false).rgb;
+    float3 A = SceneTextureLookup((float2(-1,1)*TexelSize) + uv,textureID,false).rgb;
+    float3 B = SceneTextureLookup((float2(0,1)*TexelSize) + uv,textureID,false).rgb;
+    float3 C = SceneTextureLookup((float2(1,1)*TexelSize) + uv,textureID,false).rgb;
+    float3 D = SceneTextureLookup((float2(-1,0)*TexelSize) + uv,textureID,false).rgb;
+    float3 E = SceneTextureLookup((float2(1,0)*TexelSize) + uv,textureID,false).rgb;
+    float3 F = SceneTextureLookup((float2(-1,-1)*TexelSize) + uv,textureID,false).rgb;
+    float3 G = SceneTextureLookup((float2(0,-1)*TexelSize) + uv,textureID,false).rgb;
+    float3 H = SceneTextureLookup((float2(1,-1)*TexelSize) + uv,textureID,false).rgb;
 
     //sobel x & y differential per channel
     float dIxR = abs(sobel_operation(float3(A.r,D.r,F.r),float3(C.r,E.r,H.r)));
@@ -38,7 +38,7 @@ struct CannyHelpers {
     return float3(dIx,dIy,dI);
   }
   //commment
-  float2 non_maximum_suppression_double_threshold(float2 uv, float2 TexelSize, float lower, float upper) {
+  float2 non_maximum_suppression_double_threshold(float2 uv, float2 TexelSize, float lower, float upper, int textureID) {
     //step 1 get the sobel magnitude
     float3 sobel_grad = sobel_gradient(uv,TexelSize);
     //step 2 Non-Maximum Suppression
@@ -46,8 +46,8 @@ struct CannyHelpers {
     float2x2 rotation_matrix = float2x2(cos(theta),-sin(theta), sin(theta), cos(theta));
     float2 offset_left = mul(float2(-1,0)*TexelSize,rotation_matrix);
     float2 offset_right = mul(float2(1,0)*TexelSize,rotation_matrix);
-    float3 sobel_grad_left = sobel_gradient(uv+offset_left,TexelSize);
-    float3 sobel_grad_right = sobel_gradient(uv+offset_right,TexelSize);
+    float3 sobel_grad_left = sobel_gradient(uv+offset_left,TexelSize,textureID);
+    float3 sobel_grad_right = sobel_gradient(uv+offset_right,TexelSize,textureID);
     float edge = sobel_grad.z;
     if ((edge < sobel_grad_left.z) || (edge < sobel_grad_right.z)) {
       edge = 0;
@@ -65,7 +65,7 @@ if (SceneTextureLookup(uv,25,false).r == stencilIndex) {
   // float lower = 0.2;
   // float upper = 0.6;
   //step 1 get the sobel magnitude
-  float2 threshold_response = c_h.non_maximum_suppression_double_threshold(uv,TexelSize,lower,upper);
+  float2 threshold_response = c_h.non_maximum_suppression_double_threshold(uv,TexelSize,lower,upper,textureID);
 
   /*
   threshold_response = (lower_response,upper_response)
