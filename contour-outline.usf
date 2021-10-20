@@ -40,7 +40,7 @@ struct CannyHelpers {
   //commment
   float2 non_maximum_suppression_double_threshold(float2 uv, float2 TexelSize, float lower, float upper, int textureID) {
     //step 1 get the sobel magnitude
-    float3 sobel_grad = sobel_gradient(uv,TexelSize);
+    float3 sobel_grad = sobel_gradient(uv,TexelSize,textureID);
     //step 2 Non-Maximum Suppression
     float theta = atan(sobel_grad.y/sobel_grad.x);
     float2x2 rotation_matrix = float2x2(cos(theta),-sin(theta), sin(theta), cos(theta));
