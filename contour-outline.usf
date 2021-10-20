@@ -62,8 +62,8 @@ float stencilIndex = 1;
 float2 uv = GetDefaultSceneTextureUV(Parameters,14);
 if (SceneTextureLookup(uv,25,false).r == stencilIndex) {
   float2 TexelSize = View.ViewSizeAndInvSize.zw;
-  float lower = 0.2;
-  float upper = 0.6;
+  // float lower = 0.2;
+  // float upper = 0.6;
   //step 1 get the sobel magnitude
   float2 threshold_response = c_h.non_maximum_suppression_double_threshold(uv,TexelSize,lower,upper);
 
