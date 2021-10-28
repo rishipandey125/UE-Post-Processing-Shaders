@@ -1,7 +1,7 @@
 #pragma once
 //grayscale->blur->canny
 struct GaussianBlurHelpers {
-  float grayscale(float3 pixel) {
+  float float3 pixel) {
     return (pixel.r + pixel.g + pixel.b) / 3.0;
   }
   float gaussian_blur_convolution(float3 row1, float3 row2, float3 row3) {
@@ -11,23 +11,34 @@ struct GaussianBlurHelpers {
       return dot(filter1,row1) + dot(filter2,row2) + dot(filter3,row3);
   }
 
-  float gaussian_blur(float2 uv, float2 TexelSize) {
+  float3 gaussian_blur(float2 uv, float2 TexelSize) {
     // UV coordinates based on Layout
     // A B C
     // D X E
     // F G H
-    float A = grayscale(SceneTextureLookup((float2(-1,1)*TexelSize) + uv,25,false).rgb);
-    float B = grayscale(SceneTextureLookup((float2(0,1)*TexelSize) + uv,25,false).rgb);
-    float C = grayscale(SceneTextureLookup((float2(1,1)*TexelSize) + uv,25,false).rgb);
-    float D = grayscale(SceneTextureLookup((float2(-1,0)*TexelSize) + uv,25,false).rgb);
-    float X = grayscale(SceneTextureLookup(uv,25,false).rgb);
-    float E = grayscale(SceneTextureLookup((float2(1,0)*TexelSize) + uv,25,false).rgb);
-    float F = grayscale(SceneTextureLookup((float2(-1,-1)*TexelSize) + uv,25,false).rgb);
-    float G = grayscale(SceneTextureLookup((float2(0,-1)*TexelSize) + uv,25,false).rgb);
-    float H = grayscale(SceneTextureLookup((float2(1,-1)*TexelSize) + uv,25,false).rgb);
+    // float A = SceneTextureLookup((float2(-1,1)*TexelSize) + uv,25,false).rgb);
+    // float B = SceneTextureLookup((float2(0,1)*TexelSize) + uv,25,false).rgb);
+    // float C = SceneTextureLookup((float2(1,1)*TexelSize) + uv,25,false).rgb);
+    // float D = SceneTextureLookup((float2(-1,0)*TexelSize) + uv,25,false).rgb);
+    // float X = SceneTextureLookup(uv,25,false).rgb);
+    // float E = SceneTextureLookup((float2(1,0)*TexelSize) + uv,25,false).rgb);
+    // float F = SceneTextureLookup((float2(-1,-1)*TexelSize) + uv,25,false).rgb);
+    // float G = SceneTextureLookup((float2(0,-1)*TexelSize) + uv,25,false).rgb);
+    // float H = SceneTextureLookup((float2(1,-1)*TexelSize) + uv,25,false).rgb);
+    float A = SceneTextureLookup((float2(-1,1)*TexelSize) + uv,25,false).rgb;
+    float B = SceneTextureLookup((float2(0,1)*TexelSize) + uv,25,false).rgb;
+    float C = SceneTextureLookup((float2(1,1)*TexelSize) + uv,25,false).rgb;
+    float X = SceneTextureLookup(uv,25,false).rgb;
+    float E = SceneTextureLookup((float2(1,0)*TexelSize) + uv,25,false).rgb;
+    float F = SceneTextureLookup((float2(-1,-1)*TexelSize) + uv,25,false).rgb;
+    float G = SceneTextureLookup((float2(0,-1)*TexelSize) + uv,25,false).rgb;
+    float H = SceneTextureLookup((float2(1,-1)*TexelSize) + uv,25,false).rgb;
     //weighted avg so that you don't lighten or darken a pixel
-    float blurred_pixel = gaussian_blur_convolution(float3(A,B,C),float3(D,X,E),float3(F,G,H))/9.0;
-    return blurred_pixel;
+    float blurred_pixel_r = gaussian_blur_convolution(float3(A.r,B.r,C.r),float3(D.r,X.r,E.r),float3(F.r,G.r,H.r))/9.0;
+    float blurred_pixel_g = gaussian_blur_convolution(float3(A.g,B.g,C.g),float3(D.g,X.g,E.g),float3(F.g,G.g,H.g))/9.0;
+    float blurred_pixel_b = gaussian_blur_convolution(float3(A.b,B.b,C.b),float3(D.b,X.b,E.b),float3(F.b,G.b,H.b))/9.0;
+
+    return float3(blurred_pixel_r,blurred_pixel_g,blurred_pixel_b);
   }
 }; GaussianBlurHelpers g_b;
 
@@ -37,4 +48,4 @@ if (SceneTextureLookup(uv,25,false).r == stencilIndex) {
   float2 TexelSize = View.ViewSizeAndInvSize.zw;
   return g_b.gaussian_blur(uv,TexelSize);
 }
-return 0.0;
+return float3(0.0,0.0,0.0);
