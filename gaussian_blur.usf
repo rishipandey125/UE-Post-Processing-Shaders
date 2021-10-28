@@ -26,7 +26,7 @@ struct GaussianBlurHelpers {
     float G = grayscale(SceneTextureLookup((float2(0,-1)*TexelSize) + uv,25,false).rgb);
     float H = grayscale(SceneTextureLookup((float2(1,-1)*TexelSize) + uv,25,false).rgb);
     //weighted avg so that you don't lighten or darken a pixel
-    float blurred_pixel = gaussian_blur(float3(A,B,C),float3(D,X,E),float3(F,G,H))/9.0;
+    float blurred_pixel = gaussian_blur_convolution(float3(A,B,C),float3(D,X,E),float3(F,G,H))/9.0;
     return blurred_pixel;
   }
 }; GaussianBlurHelpers g_b;
