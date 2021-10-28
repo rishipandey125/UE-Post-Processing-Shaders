@@ -43,10 +43,6 @@ struct GaussianBlurHelpers {
   }
 }; GaussianBlurHelpers g_b;
 
-float stencilIndex = 1;
 float2 uv = GetDefaultSceneTextureUV(Parameters,14);
-if (SceneTextureLookup(uv,25,false).r == stencilIndex) {
-  float2 TexelSize = View.ViewSizeAndInvSize.zw;
-  return g_b.gaussian_blur(uv,TexelSize);
-}
-return float3(0.0,0.0,0.0);
+float2 TexelSize = View.ViewSizeAndInvSize.zw;
+return g_b.gaussian_blur(uv,TexelSize);
