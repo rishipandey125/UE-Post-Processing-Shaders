@@ -38,8 +38,8 @@ struct GaussianBlurHelpers {
     float blurred_pixel_r = gaussian_blur_convolution(float3(A.r,B.r,C.r),float3(D.r,X.r,E.r),float3(F.r,G.r,H.r))/9.0;
     float blurred_pixel_g = gaussian_blur_convolution(float3(A.g,B.g,C.g),float3(D.g,X.g,E.g),float3(F.g,G.g,H.g))/9.0;
     float blurred_pixel_b = gaussian_blur_convolution(float3(A.b,B.b,C.b),float3(D.b,X.b,E.b),float3(F.b,G.b,H.b))/9.0;
-
-    return float3(blurred_pixel_r,blurred_pixel_g,blurred_pixel_b);
+    return float3(1.0,0.0,0.0);
+    // return float3(blurred_pixel_r,blurred_pixel_g,blurred_pixel_b);
   }
 }; GaussianBlurHelpers g_b;
 
