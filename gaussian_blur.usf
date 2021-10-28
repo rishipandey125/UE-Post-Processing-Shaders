@@ -1,9 +1,9 @@
 #pragma once
 //grayscale->blur->canny
 struct GaussianBlurHelpers {
-  float float3 pixel) {
-    return (pixel.r + pixel.g + pixel.b) / 3.0;
-  }
+  // float float3 pixel) {
+  //   return (pixel.r + pixel.g + pixel.b) / 3.0;
+  // }
   float gaussian_blur_convolution(float3 row1, float3 row2, float3 row3) {
       float3 filter1 = float3(1.0,2.0,1.0);
       float3 filter2 = float3(2.0,4.0,1.0);
