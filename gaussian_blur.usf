@@ -25,14 +25,14 @@ struct GaussianBlurHelpers {
     // float F = SceneTextureLookup((float2(-1,-1)*TexelSize) + uv,25,false).rgb);
     // float G = SceneTextureLookup((float2(0,-1)*TexelSize) + uv,25,false).rgb);
     // float H = SceneTextureLookup((float2(1,-1)*TexelSize) + uv,25,false).rgb);
-    float A = SceneTextureLookup((float2(-1,1)*TexelSize) + uv,25,false).rgb;
-    float B = SceneTextureLookup((float2(0,1)*TexelSize) + uv,25,false).rgb;
-    float C = SceneTextureLookup((float2(1,1)*TexelSize) + uv,25,false).rgb;
-    float X = SceneTextureLookup(uv,25,false).rgb;
-    float E = SceneTextureLookup((float2(1,0)*TexelSize) + uv,25,false).rgb;
-    float F = SceneTextureLookup((float2(-1,-1)*TexelSize) + uv,25,false).rgb;
-    float G = SceneTextureLookup((float2(0,-1)*TexelSize) + uv,25,false).rgb;
-    float H = SceneTextureLookup((float2(1,-1)*TexelSize) + uv,25,false).rgb;
+    float3 A = SceneTextureLookup((float2(-1,1)*TexelSize) + uv,25,false).rgb;
+    float3 B = SceneTextureLookup((float2(0,1)*TexelSize) + uv,25,false).rgb;
+    float3 C = SceneTextureLookup((float2(1,1)*TexelSize) + uv,25,false).rgb;
+    float3 X = SceneTextureLookup(uv,25,false).rgb;
+    float3 E = SceneTextureLookup((float2(1,0)*TexelSize) + uv,25,false).rgb;
+    float3 F = SceneTextureLookup((float2(-1,-1)*TexelSize) + uv,25,false).rgb;
+    float3 G = SceneTextureLookup((float2(0,-1)*TexelSize) + uv,25,false).rgb;
+    float3 H = SceneTextureLookup((float2(1,-1)*TexelSize) + uv,25,false).rgb;
     //weighted avg so that you don't lighten or darken a pixel
     float blurred_pixel_r = gaussian_blur_convolution(float3(A.r,B.r,C.r),float3(D.r,X.r,E.r),float3(F.r,G.r,H.r))/9.0;
     float blurred_pixel_g = gaussian_blur_convolution(float3(A.g,B.g,C.g),float3(D.g,X.g,E.g),float3(F.g,G.g,H.g))/9.0;
