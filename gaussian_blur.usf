@@ -35,6 +35,6 @@ float stencilIndex = 1;
 float2 uv = GetDefaultSceneTextureUV(Parameters,14);
 if (SceneTextureLookup(uv,25,false).r == stencilIndex) {
   float2 TexelSize = View.ViewSizeAndInvSize.zw;
-  return gaussian_blur(uv,TexelSize);
+  return g_b.gaussian_blur(uv,TexelSize);
 }
 return 0.0;
