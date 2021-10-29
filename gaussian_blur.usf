@@ -8,7 +8,7 @@ struct GaussianBlurHelpers {
   }
 
   float3 gaussian_blur(float2 uv, float2 TexelSize, int sceneTextureId) {
-    int radius = 2; //kernel size for convoultion = (2r+1)x(2r+1)
+    int radius = 6; //kernel size for convoultion = (2r+1)x(2r+1)
     float3 pixel = float3(0.0,0.0,0.0);
     float weightSum = 0.0;
     for (int y = -radius; y <= radius; y++) {
