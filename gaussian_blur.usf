@@ -42,7 +42,7 @@ struct GaussianBlurHelpers {
   }
 }; GaussianBlurHelpers g_b;
 
-float2 uv = GetDefaultSceneTextureUV(Parameters,2); //THIS MAY BE A HUGE ISSUE (WHAT DOES THE 14 MEAN?)
+float2 uv = GetDefaultSceneTextureUV(Parameters,5); //THIS MAY BE A HUGE ISSUE (WHAT DOES THE 14 MEAN?)
 float2 TexelSize = View.ViewSizeAndInvSize.zw;
-return SceneTextureLookup(uv,2,false);
+return SceneTextureLookup(uv,5,false);
 // return g_b.gaussian_blur(uv,TexelSize);
