@@ -13,7 +13,7 @@ struct GaussianBlurHelpers {
     float weightSum = 0.0;
     for (int y = -radius; y <= radius; y++) {
       for (int x = -radius; x <= radius; x++) {
-        float offset = uv + (float2(x,y) * TexelSize);
+        float2 offset = uv + (float2(x,y) * TexelSize);
         float weight = calculate1DGuassian(float(x)/float(radius)) * calculate1DGuassian(float(y)/float(radius));
         pixel += SceneTextureLookup(offset, sceneTextureId, false).rgb * weight;
         weightSum += weight;
