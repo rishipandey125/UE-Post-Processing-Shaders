@@ -11,9 +11,9 @@ struct GaussianBlurHelpers {
     int radius = 2; //kernel size for convoultion = (2r+1)x(2r+1)
     float3 pixel = float3(0.0,0.0,0.0);
     float weightSum = 0.0;
-    for (int x = -radius; x <= radius; x++) {
-      for (int y = -radius; y <= radius; y++) {
-        float offset = uv + float2(x,y) * TexelSize;
+    for (int y = -radius; y <= radius; y++) {
+      for (int x = -radius; x <= radius; x++) {
+        float offset = uv + (float2(x,y) * TexelSize);
         float weight = calculate1DGuassian(float(x)/float(radius)) * calculate1DGuassian(float(y)/float(radius));
         pixel += SceneTextureLookup(offset, sceneTextureId, false).rgb * weight;
         weightSum += weight;
@@ -22,7 +22,6 @@ struct GaussianBlurHelpers {
     return pixel/weightSum;
   }
 }; GaussianBlurHelpers g_b;
-int sceneTextureId = 0;
-float2 uv = GetDefaultSceneTextureUV(Parameters,sceneTextureId); //THIS MAY BE A HUGE ISSUE (WHAT DOES THE 14 MEAN?)
-float2 TexelSize = View.ViewSizeAndInvSize.zw;
+int sceneTextureId = 14;
+float2 uv = GetDefaultSceneTextureUV(Parameters,sceneTextureId);
 return g_b.gaussian_blur(uv, TexelSize, sceneTextureId);
