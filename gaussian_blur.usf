@@ -9,13 +9,13 @@ struct GaussianBlurHelpers {
 
   float3 gaussian_blur(float2 uv, float2 TexelSize, int sceneTextureId) {
     int radius = 2; //kernel size for convoultion = (2r+1)x(2r+1)
-    float3 pixel = float3(0.0,0.0.0.0);
+    float3 pixel = float3(0.0,0.0,0.0);
     float weightSum = 0.0;
     for (int x = -radius; x <= radius; x++) {
       for (int y = -radius; y <= radius; y++) {
         float offset = uv + float(x,y) * TexelSize;
         float weight = calculate1DGuassian(float(x)/float(radius)) * calculate1DGuassian(float(y)/float(radius));
-        pixel += SceneTextureLookup(Offset, sceneTextureId, false).rgb * weight;
+        pixel += SceneTextureLookup(offset, sceneTextureId, false).rgb * weight;
         weightSum += weight;
       }
     }
