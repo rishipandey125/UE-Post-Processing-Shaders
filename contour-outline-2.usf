@@ -106,6 +106,3 @@ if (SceneTextureLookup(uv,25,false).r == stencilIndex) {
   }
 }
 return 0.0;
-© 2021 GitHub, Inc.
-Terms
-Privacy
