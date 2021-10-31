@@ -33,14 +33,14 @@ struct CannyHelpers {
     // A B C
     // D X E
     // F G H
-    float3 A = gaussian_blur(float2(-1,1)*TexelSize) + uv, TexelSize, textureID);
-    float3 B = gaussian_blur(float2(0,1)*TexelSize) + uv, TexelSize, textureID);
-    float3 C = gaussian_blur(float2(1,1)*TexelSize) + uv, TexelSize, textureID);
-    float3 D = gaussian_blur(float2(-1,0)*TexelSize) + uv, TexelSize, textureID);
-    float3 E = gaussian_blur(float2(1,0)*TexelSize) + uv, TexelSize, textureID);
-    float3 F = gaussian_blur(float2(-1,1)*TexelSize) + uv, TexelSize, textureID);
-    float3 G = gaussian_blur(float2(0,1)*TexelSize) + uv, TexelSize, textureID);
-    float3 H = gaussian_blur(float2(1,-1)*TexelSize) + uv, TexelSize, textureID);
+    float3 A = gaussian_blur((float2(-1,1)*TexelSize) + uv, TexelSize, textureID);
+    float3 B = gaussian_blur((float2(0,1)*TexelSize) + uv, TexelSize, textureID);
+    float3 C = gaussian_blur((float2(1,1)*TexelSize) + uv, TexelSize, textureID);
+    float3 D = gaussian_blur((float2(-1,0)*TexelSize) + uv, TexelSize, textureID);
+    float3 E = gaussian_blur((float2(1,0)*TexelSize) + uv, TexelSize, textureID);
+    float3 F = gaussian_blur((float2(-1,1)*TexelSize) + uv, TexelSize, textureID);
+    float3 G = gaussian_blur((float2(0,1)*TexelSize) + uv, TexelSize, textureID);
+    float3 H = gaussian_blur((float2(1,-1)*TexelSize) + uv, TexelSize, textureID);
     // float3 A = SceneTextureLookup((float2(-1,1)*TexelSize) + uv,textureID,false).rgb;
     // float3 B = SceneTextureLookup((float2(0,1)*TexelSize) + uv,textureID,false).rgb;
     // float3 C = SceneTextureLookup((float2(1,1)*TexelSize) + uv,textureID,false).rgb;
