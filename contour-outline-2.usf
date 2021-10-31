@@ -62,6 +62,7 @@ struct CannyHelpers {
 float stencilIndex = 1;
 float2 uv = GetDefaultSceneTextureUV(Parameters,14);
 if (SceneTextureLookup(uv,25,false).r == stencilIndex) {
+  int textureID = 14;
   float2 TexelSize = View.ViewSizeAndInvSize.zw;
   // float lower = 0.2;
   // float upper = 0.6;
