@@ -2,6 +2,26 @@
 #pragma once
 
 struct CannyHelpers {
+  //1D Guassian Function (Determines the Weight of the Neighboring Pixel in Convolution)
+  float calculate1DGuassian(float x) {
+    return exp(-0.5 * pow(3.141 * (x), 2));
+  }
+
+  float3 gaussian_blur(float2 uv, float2 TexelSize, int textureID) {
+    int radius = 6; //kernel size for convoultion = (2r+1)x(2r+1)
+    float3 pixel = float3(0.0,0.0,0.0);
+    float weightSum = 0.0;
+    for (int y = -radius; y <= radius; y++) {
+      for (int x = -radius; x <= radius; x++) {
+        float2 offset = uv + (float2(x,y) * TexelSize);
+        float weight = calculate1DGuassian(float(x)/float(radius)) * calculate1DGuassian(float(y)/float(radius));
+        pixel += SceneTextureLookup(offset, textureID, false).rgb * weight;
+        weightSum += weight;
+      }
+    }
+    return pixel/weightSum;
+  }
+
   float sobel_operation(float3 vec1, float3 vec2) {
       float3 filter1 = float3(-1.0,-2.0,-1.0);
       float3 filter2 = float3(1.0,2.0,1.0);
@@ -13,14 +33,22 @@ struct CannyHelpers {
     // A B C
     // D X E
     // F G H
-    float3 A = SceneTextureLookup((float2(-1,1)*TexelSize) + uv,textureID,false).rgb;
-    float3 B = SceneTextureLookup((float2(0,1)*TexelSize) + uv,textureID,false).rgb;
-    float3 C = SceneTextureLookup((float2(1,1)*TexelSize) + uv,textureID,false).rgb;
-    float3 D = SceneTextureLookup((float2(-1,0)*TexelSize) + uv,textureID,false).rgb;
-    float3 E = SceneTextureLookup((float2(1,0)*TexelSize) + uv,textureID,false).rgb;
-    float3 F = SceneTextureLookup((float2(-1,-1)*TexelSize) + uv,textureID,false).rgb;
-    float3 G = SceneTextureLookup((float2(0,-1)*TexelSize) + uv,textureID,false).rgb;
-    float3 H = SceneTextureLookup((float2(1,-1)*TexelSize) + uv,textureID,false).rgb;
+    float3 A = gaussian_blur((float2(-1,1)*TexelSize) + uv, TexelSize, textureID);
+    float3 B = gaussian_blur((float2(0,1)*TexelSize) + uv, TexelSize, textureID);
+    float3 C = gaussian_blur((float2(1,1)*TexelSize) + uv, TexelSize, textureID);
+    float3 D = gaussian_blur((float2(-1,0)*TexelSize) + uv, TexelSize, textureID);
+    float3 E = gaussian_blur((float2(1,0)*TexelSize) + uv, TexelSize, textureID);
+    float3 F = gaussian_blur((float2(-1,1)*TexelSize) + uv, TexelSize, textureID);
+    float3 G = gaussian_blur((float2(0,1)*TexelSize) + uv, TexelSize, textureID);
+    float3 H = gaussian_blur((float2(1,-1)*TexelSize) + uv, TexelSize, textureID);
+    // float3 A = SceneTextureLookup((float2(-1,1)*TexelSize) + uv,textureID,false).rgb;
+    // float3 B = SceneTextureLookup((float2(0,1)*TexelSize) + uv,textureID,false).rgb;
+    // float3 C = SceneTextureLookup((float2(1,1)*TexelSize) + uv,textureID,false).rgb;
+    // float3 D = SceneTextureLookup((float2(-1,0)*TexelSize) + uv,textureID,false).rgb;
+    // float3 E = SceneTextureLookup((float2(1,0)*TexelSize) + uv,textureID,false).rgb;
+    // float3 F = SceneTextureLookup((float2(-1,-1)*TexelSize) + uv,textureID,false).rgb;
+    // float3 G = SceneTextureLookup((float2(0,-1)*TexelSize) + uv,textureID,false).rgb;
+    // float3 H = SceneTextureLookup((float2(1,-1)*TexelSize) + uv,textureID,false).rgb;
 
     //sobel x & y differential per channel
     float dIxR = abs(sobel_operation(float3(A.r,D.r,F.r),float3(C.r,E.r,H.r)));
@@ -60,7 +88,7 @@ struct CannyHelpers {
 
 float stencilIndex = 1;
 int textureID = 0;
-float2 uv = GetDefaultSceneTextureUV(Parameters,textureID);
+float2 uv = GetDefaultSceneTextureUV(Parameters,14);
 if (SceneTextureLookup(uv,25,false).r == stencilIndex) {
   float2 TexelSize = View.ViewSizeAndInvSize.zw;
   // float lower = 0.2;
