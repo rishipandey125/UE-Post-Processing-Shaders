@@ -2,34 +2,24 @@
 #pragma once
 
 struct CannyHelpers {
-  float grayscale(float3 pixel) {
-    return (pixel.r + pixel.g + pixel.b) / 3.0;
+  //1D Guassian Function (Determines the Weight of the Neighboring Pixel in Convolution)
+  float calculate1DGuassian(float x) {
+    return exp(-0.5 * pow(3.141 * (x), 2));
   }
 
-  float gaussian_blur_convolution(float3 row1, float3 row2, float3 row3) {
-      float3 filter1 = float3(1.0,2.0,1.0);
-      float3 filter2 = float3(2.0,4.0,1.0);
-      float3 filter3 = float3(1.0,2.0,1.0);
-      return dot(filter1,row1) + dot(filter2,row2) + dot(filter3,row3);
-  }
-
-  float gaussian_blur(float2 uv, float2 TexelSize) {
-    // UV coordinates based on Layout
-    // A B C
-    // D X E
-    // F G H
-    float A = grayscale(SceneTextureLookup((float2(-1,1)*TexelSize) + uv,25,false).rgb);
-    float B = grayscale(SceneTextureLookup((float2(0,1)*TexelSize) + uv,25,false).rgb);
-    float C = grayscale(SceneTextureLookup((float2(1,1)*TexelSize) + uv,25,false).rgb);
-    float D = grayscale(SceneTextureLookup((float2(-1,0)*TexelSize) + uv,25,false).rgb);
-    float X = grayscale(SceneTextureLookup(uv,25,false).rgb);
-    float E = grayscale(SceneTextureLookup((float2(1,0)*TexelSize) + uv,25,false).rgb);
-    float F = grayscale(SceneTextureLookup((float2(-1,-1)*TexelSize) + uv,25,false).rgb);
-    float G = grayscale(SceneTextureLookup((float2(0,-1)*TexelSize) + uv,25,false).rgb);
-    float H = grayscale(SceneTextureLookup((float2(1,-1)*TexelSize) + uv,25,false).rgb);
-    //weighted avg so that you don't lighten or darken a pixel
-    float blurred_pixel = gaussian_blur(float3(A,B,C),float3(D,X,E),float3(F,G,H))/9.0;
-    return blurred_pixel;
+  float3 gaussian_blur(float2 uv, float2 TexelSize, int textureID) {
+    int radius = 6; //kernel size for convoultion = (2r+1)x(2r+1)
+    float3 pixel = float3(0.0,0.0,0.0);
+    float weightSum = 0.0;
+    for (int y = -radius; y <= radius; y++) {
+      for (int x = -radius; x <= radius; x++) {
+        float2 offset = uv + (float2(x,y) * TexelSize);
+        float weight = calculate1DGuassian(float(x)/float(radius)) * calculate1DGuassian(float(y)/float(radius));
+        pixel += SceneTextureLookup(offset, textureID, false).rgb * weight;
+        weightSum += weight;
+      }
+    }
+    return pixel/weightSum;
   }
 
   float sobel_operation(float3 vec1, float3 vec2) {
@@ -43,14 +33,22 @@ struct CannyHelpers {
     // A B C
     // D X E
     // F G H
-    float3 A = grayscale(SceneTextureLookup((float2(-1,1)*TexelSize) + uv,textureID,false).rgb);
-    float3 B = grayscale(SceneTextureLookup((float2(0,1)*TexelSize) + uv,textureID,false).rgb);
-    float3 C = grayscale(SceneTextureLookup((float2(1,1)*TexelSize) + uv,textureID,false).rgb);
-    float3 D = grayscale(SceneTextureLookup((float2(-1,0)*TexelSize) + uv,textureID,false).rgb);
-    float3 E = grayscale(SceneTextureLookup((float2(1,0)*TexelSize) + uv,textureID,false).rgb);
-    float3 F = grayscale(SceneTextureLookup((float2(-1,-1)*TexelSize) + uv,textureID,false).rgb);
-    float3 G = grayscale(SceneTextureLookup((float2(0,-1)*TexelSize) + uv,textureID,false).rgb);
-    float3 H = grayscale(SceneTextureLookup((float2(1,-1)*TexelSize) + uv,textureID,false).rgb);
+    float3 A = gaussian_blur(float2(-1,1)*TexelSize) + uv, TexelSize, textureID);
+    float3 B = gaussian_blur(float2(0,1)*TexelSize) + uv, TexelSize, textureID);
+    float3 C = gaussian_blur(float2(1,1)*TexelSize) + uv, TexelSize, textureID);
+    float3 D = gaussian_blur(float2(-1,0)*TexelSize) + uv, TexelSize, textureID);
+    float3 E = gaussian_blur(float2(1,0)*TexelSize) + uv, TexelSize, textureID);
+    float3 F = gaussian_blur(float2(-1,1)*TexelSize) + uv, TexelSize, textureID);
+    float3 G = gaussian_blur(float2(0,1)*TexelSize) + uv, TexelSize, textureID);
+    float3 H = gaussian_blur(float2(1,-1)*TexelSize) + uv, TexelSize, textureID);
+    // float3 A = SceneTextureLookup((float2(-1,1)*TexelSize) + uv,textureID,false).rgb;
+    // float3 B = SceneTextureLookup((float2(0,1)*TexelSize) + uv,textureID,false).rgb;
+    // float3 C = SceneTextureLookup((float2(1,1)*TexelSize) + uv,textureID,false).rgb;
+    // float3 D = SceneTextureLookup((float2(-1,0)*TexelSize) + uv,textureID,false).rgb;
+    // float3 E = SceneTextureLookup((float2(1,0)*TexelSize) + uv,textureID,false).rgb;
+    // float3 F = SceneTextureLookup((float2(-1,-1)*TexelSize) + uv,textureID,false).rgb;
+    // float3 G = SceneTextureLookup((float2(0,-1)*TexelSize) + uv,textureID,false).rgb;
+    // float3 H = SceneTextureLookup((float2(1,-1)*TexelSize) + uv,textureID,false).rgb;
 
     //sobel x & y differential on grayscaled value
     float dIx = abs(sobel_operation(float3(A,D,F),float3(C,E,H)));
@@ -82,6 +80,7 @@ struct CannyHelpers {
 }; CannyHelpers c_h;
 
 float stencilIndex = 1;
+int textureID = 0;
 float2 uv = GetDefaultSceneTextureUV(Parameters,14);
 if (SceneTextureLookup(uv,25,false).r == stencilIndex) {
   float2 TexelSize = View.ViewSizeAndInvSize.zw;
