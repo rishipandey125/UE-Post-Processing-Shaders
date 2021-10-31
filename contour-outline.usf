@@ -94,8 +94,8 @@ if (SceneTextureLookup(uv,25,false).r == stencilIndex) {
     //turn this into 1 loop -> use loop keyword to layer
     static int POSITIVE_ONE = 1;
     static int NEGATIVE_ONE = -1;
-    for (int y = POSITIVE_ONE; y >= NEGATIVE_ONE; y--) {
-      for (int x = NEGATIVE_ONE; x <= POSITIVE_ONE; x++) {
+    [loop] for (int y = POSITIVE_ONE; y >= NEGATIVE_ONE; y--) {
+      [loop] for (int x = NEGATIVE_ONE; x <= POSITIVE_ONE; x++) {
         //get A...H
         float2 uv_offset = (float2(x,y) * TexelSize) + uv;
         //check if it is a strong response
