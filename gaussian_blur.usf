@@ -22,7 +22,7 @@ struct GaussianBlurHelpers {
     return pixel/weightSum;
   }
 }; GaussianBlurHelpers g_b;
-int sceneTextureId = 14;
+int sceneTextureId = 0;
 float2 TexelSize = View.ViewSizeAndInvSize.zw;
 float2 uv = GetDefaultSceneTextureUV(Parameters,sceneTextureId);
 return g_b.gaussian_blur(uv, TexelSize, sceneTextureId);

@@ -59,7 +59,7 @@ struct CannyHelpers {
 }; CannyHelpers c_h;
 
 float stencilIndex = 1;
-int textureID = 0;
+int textureID = 14;
 float2 uv = GetDefaultSceneTextureUV(Parameters,14);
 if (SceneTextureLookup(uv,25,false).r == stencilIndex) {
   float2 TexelSize = View.ViewSizeAndInvSize.zw;
@@ -91,6 +91,7 @@ if (SceneTextureLookup(uv,25,false).r == stencilIndex) {
     // A B C
     // D X E
     // F G H
+    //turn this into 1 loop -> use loop keyword to layer
     for (int y = 1; y >= -1; y--) {
       for (int x = -1; x <= 1; x++) {
         //get A...H
