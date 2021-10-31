@@ -50,11 +50,18 @@ struct CannyHelpers {
     // float3 G = SceneTextureLookup((float2(0,-1)*TexelSize) + uv,textureID,false).rgb;
     // float3 H = SceneTextureLookup((float2(1,-1)*TexelSize) + uv,textureID,false).rgb;
 
-    //sobel x & y differential on grayscaled value
-    float dIx = abs(sobel_operation(float3(A,D,F),float3(C,E,H)));
-    float dIy = abs(sobel_operation(float3(A,B,C),float3(F,G,H)));
-
+    //sobel x & y differential per channel
+    float dIxR = abs(sobel_operation(float3(A.r,D.r,F.r),float3(C.r,E.r,H.r)));
+    float dIyR = abs(sobel_operation(float3(A.r,B.r,C.r),float3(F.r,G.r,H.r)));
+    float dIxG = abs(sobel_operation(float3(A.g,D.g,F.g),float3(C.g,E.g,H.g)));
+    float dIyG = abs(sobel_operation(float3(A.g,B.g,C.g),float3(F.g,G.g,H.g)));
+    float dIxB = abs(sobel_operation(float3(A.b,D.b,F.b),float3(C.b,E.b,H.b)));
+    float dIyB = abs(sobel_operation(float3(A.b,B.b,C.b),float3(F.b,G.b,H.b)));
     //identifying grad_x & grad_y
+    float dIx = max(dIxR,dIxG);
+    dIx = max(dIx,dIxB);
+    float dIy = max(dIyR,dIyG);
+    dIy = max(dIy,dIyB);
     float dI = sqrt(pow(dIx,2.0)+pow(dIy,2.0));
     return float3(dIx,dIy,dI);
   }
