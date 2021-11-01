@@ -91,19 +91,34 @@ if (SceneTextureLookup(uv,25,false).r == stencilIndex) {
     // A B C
     // D X E
     // F G H
+
     //turn this into 1 loop -> use loop keyword to layer
-    static int POSITIVE_ONE = 1;
-    static int NEGATIVE_ONE = -1;
-    [loop] for (int y = POSITIVE_ONE; y >= NEGATIVE_ONE; y--) {
-      [loop] for (int x = NEGATIVE_ONE; x <= POSITIVE_ONE; x++) {
-        //get A...H
-        float2 uv_offset = (float2(x,y) * TexelSize) + uv;
-        //check if it is a strong response
-        float2 hysteresis_threshold_response = c_h.non_maximum_suppression_double_threshold(uv_offset,TexelSize,lower,upper,textureID);
-        if (hysteresis_threshold_response.y > 0.0) {
-          //if it is then this weak response is an edge
-          return 1.0;
-        }
+    // static int POSITIVE_ONE = 1;
+    // static int NEGATIVE_ONE = -1;
+    // for (int y = POSITIVE_ONE; y >= NEGATIVE_ONE; y--) {
+    //   for (int x = NEGATIVE_ONE; x <= POSITIVE_ONE; x++) {
+    //     //get A...H
+    //     float2 uv_offset = (float2(x,y) * TexelSize) + uv;
+    //     //check if it is a strong response
+    //     float2 hysteresis_threshold_response = c_h.non_maximum_suppression_double_threshold(uv_offset,TexelSize,lower,upper,textureID);
+    //     if (hysteresis_threshold_response.y > 0.0) {
+    //       //if it is then this weak response is an edge
+    //       return 1.0;
+    //     }
+    //   }
+    // }
+
+    static int KERNEL_SIZE = 9;
+    float2 cords[9] = {float2(-1,-1), float2(0,-1), float2(1,-1)
+                        float2(-1,0), float2(0,0), float2(1,0)
+                        float2(-1,1), float2(0,1), float2(1,1)};
+    [loop] for (int i = 0; i < KERNEL_SIZE; i++) {
+      float2 uv_offset = (cords[i] * TexelSize) + uv;
+      //check if it is a strong response
+      float2 hysteresis_threshold_response = c_h.non_maximum_suppression_double_threshold(uv_offset,TexelSize,lower,upper,textureID);
+      if (hysteresis_threshold_response.y > 0.0) {
+        //if it is then this weak response is an edge
+        return 1.0;
       }
     }
   }
