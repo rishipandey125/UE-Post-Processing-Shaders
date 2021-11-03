@@ -109,8 +109,8 @@ if (SceneTextureLookup(uv,25,false).r == stencilIndex) {
     // }
 
     static int KERNEL_SIZE = 9;
-    float2 cords[9] = {float2(-1,-1), float2(0,-1), float2(1,-1)
-                        float2(-1,0), float2(0,0), float2(1,0)
+    float2 cords[9] = {float2(-1,-1), float2(0,-1), float2(1,-1),
+                        float2(-1,0), float2(0,0), float2(1,0),
                         float2(-1,1), float2(0,1), float2(1,1)};
     [loop] for (int i = 0; i < KERNEL_SIZE; i++) {
       float2 uv_offset = (cords[i] * TexelSize) + uv;
