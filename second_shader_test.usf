@@ -1,14 +1,13 @@
 #pragma once
+//Texture Perturb Sin Wave
 //UV Texture GET
-float2 uv = GetDefaultSceneTextureUV(Parameters, 14);
-//Stencil Index for Character
-float stencilIndex = 1;
-float3 color = SceneTextureLookup(uv,14,false).rgb;
-//if i am in the stencil
-if (SceneTextureLookup(uv,25,false).r == stencilIndex) {
-  if (color.r == 1 && color.g == 1 && color.b == 1) {
-    color = float3(1,0,0);
-  }
-}
+int textureID = 14;
+float2 uv = GetDefaultSceneTextureUV(Parameters, textureID);
+//search texture map
+float3 edgeMap = SceneTextureLookup(uv,textureID,false).rgb;
 //return single float value (grayscale img)
+float3 color = float3(1,1,1);
+if (edgeMap.r > 0.0) {
+  color.g = 0.0;
+}
 return color;
