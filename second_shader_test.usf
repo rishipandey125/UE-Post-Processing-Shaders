@@ -5,9 +5,11 @@ int textureID = 14;
 float2 uv = GetDefaultSceneTextureUV(Parameters, textureID);
 //search texture map
 float3 edgeMap = SceneTextureLookup(uv,textureID,false).rgb;
-//return single float value (grayscale img)
-float3 color = float3(1,1,1);
-if (edgeMap.r > 0.0) {
-  color.g = 0.0;
-}
-return color;
+//chromatic aberration process
+float aberrationAmount = 0.05;
+float3 outputColor;
+outputColor.r = SceneTextureLookup(uv+aberrationAmount,textureID,false).r;
+outputColor.g = SceneTextureLookup(uv,textureID,false).g;
+outputColor.b = SceneTextureLookup(uv-aberrationAmount,textureID,false).b;
+//offset should be sin wave
+return outputColor;
