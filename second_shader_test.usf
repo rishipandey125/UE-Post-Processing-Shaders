@@ -6,7 +6,7 @@ float2 uv = GetDefaultSceneTextureUV(Parameters, textureID);
 //search texture map
 float3 edgeMap = SceneTextureLookup(uv,textureID,false).rgb;
 //chromatic aberration process
-float2 aberrationAmount = vec2(sin(uv.x),sin(uv.y));
+float2 aberrationAmount = float2(sin(uv.x),sin(uv.y));
 
 float3 outputColor;
 outputColor.r = SceneTextureLookup(uv+aberrationAmount,textureID,false).r;
