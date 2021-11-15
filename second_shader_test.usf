@@ -1,16 +1,28 @@
 #pragma once
-//Texture Perturb Sin Wave
 //UV Texture GET
 int textureID = 14;
 float2 uv = GetDefaultSceneTextureUV(Parameters, textureID);
 //search texture map
 float3 edgeMap = SceneTextureLookup(uv,textureID,false).rgb;
-//chromatic aberration process
-float2 aberrationAmount = float2(sin(uv.x),sin(uv.y));
-
 float3 outputColor;
-outputColor.r = SceneTextureLookup(uv+aberrationAmount,textureID,false).r;
-outputColor.g = SceneTextureLookup(uv,textureID,false).g;
-outputColor.b = SceneTextureLookup(uv-aberrationAmount,textureID,false).b;
+
+float amplitude = 1.;
+float frequency = 1.;
+float2 distortedUV = float2(0.0,uv.y);
+distortedUV.x = sin(uv.x * frequency);
+float t = 0.01*(-time*130.0);
+distortedUV.x += sin(uv.x*frequency*2.1 + t)*4.5;
+distortedUV.x += sin(uv.x*frequency*1.72 + t*1.121)*4.0;
+distortedUV.x += sin(uv.x*frequency*2.221 + t*0.437)*5.0;
+distortedUV.x += sin(uv.x*frequency*3.1122+ t*4.269)*2.5;
+distortedUV.x *= amplitude*0.06;
+
+
+//Process for Line Boil
+// we could also use sin distortion and try that first
+//sample distorting normal map (normal map should change by time - flip book)
+//apply scalar to normal map x & y values before adding them to uv
+//distortedUV = clamp(uv + distortion)
+//sample w/ distortedUV
 //offset should be sin wave
-return outputColor;
+return SceneTextureLookup(distortedUV,textureID,false);
