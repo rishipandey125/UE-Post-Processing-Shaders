@@ -25,4 +25,5 @@ distortedUV.x *= amplitude*0.06;
 //distortedUV = clamp(uv + distortion)
 //sample w/ distortedUV
 //offset should be sin wave
+distortedUV = clamp(distortedUV);
 return SceneTextureLookup(distortedUV,textureID,false);
